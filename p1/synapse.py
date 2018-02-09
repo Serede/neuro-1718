@@ -9,3 +9,9 @@ class Synapse:
         self.origin = origin
         self.target = target
         self.weight = weight
+
+
+    def __str__(self):
+        return '- %s --(%d)-> %s' % (self.origin, self.weight, self.target)
+
+    __repr__ = __str__
