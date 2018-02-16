@@ -10,7 +10,6 @@ class Synapse:
         self.target = target
         self.weight = weight
 
-
     def __str__(self):
         return '- %s --(%d)-> %s' % (self.origin, self.weight, self.target)
 

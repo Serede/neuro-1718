@@ -17,7 +17,7 @@ def main():
     detectLayer = Layer('Detect', detectUpNeurons + detectDownNeurons)
     outputLayer = Layer('Output', outputNeurons)
 
-    layers = [inputLayer, memoryLayer, detectLayer, outputLayer]
+    middleLayers = [memoryLayer, detectLayer]
 
     memorySynapses = [Synapse(inputNeurons[i], memoryNeurons[i], 1) for i in range(3)]
     inputUpSynapses = [Synapse(inputNeurons[i], detectUpNeurons[i], 1) for i in range(3)]
@@ -29,9 +29,12 @@ def main():
 
     synapses = memorySynapses + inputUpSynapses + inputDownSynapses + memoryUpSynapses + memoryDownSynapses + outputUpSynapses + outputDownSynapses
 
-    network = Network('MPNetwork', layers, synapses)
+    network = Network('MPNetwork', inputLayer, outputLayer, middleLayers, synapses)
 
     print(network)
+
+    with open('data/McCulloch_Pitts.txt') as inputFile, open('/dev/null') as outputFile:
+        network.run(inputFile, 4)
 
 if __name__ == "__main__":
     main()
