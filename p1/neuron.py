@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
-class Neuron(metaclass=ABCMeta):
+class Neuron(ABC):
     name = None
 
     def __init__(self, name):

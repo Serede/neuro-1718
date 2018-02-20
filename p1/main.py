@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 from mp_neuron import MPNeuron
 from layer import Layer
@@ -34,7 +35,7 @@ def main():
     print(network)
 
     with open('data/McCulloch_Pitts.txt') as inputFile, open('/dev/null') as outputFile:
-        network.run(inputFile, 4)
+        network.run(inputFile, 6)
 
 if __name__ == "__main__":
     main()
