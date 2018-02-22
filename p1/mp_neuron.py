@@ -17,4 +17,3 @@ class MPNeuron(Neuron):
 
     def f(self, y_in):
         self.value = int(y_in >= self.theta)
-        print('Updated {} to {} ({} >= {})'.format(self, self.value, y_in, self.theta))
