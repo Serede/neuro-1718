@@ -3,6 +3,7 @@
 
 from neuron import Neuron
 
+
 class MPNeuron(Neuron):
     theta = None
     value = None

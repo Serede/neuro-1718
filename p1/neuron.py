@@ -3,6 +3,7 @@
 
 from abc import ABC, abstractmethod
 
+
 class Neuron(ABC):
     name = None
 

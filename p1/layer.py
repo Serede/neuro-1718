@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
 class Layer:
     name = None
     neurons = None
@@ -13,6 +14,6 @@ class Layer:
         return len(self.neurons)
 
     def __str__(self):
-        return '- %s Layer:\n' % self.name + '\n'.join(['  + ' +str(n) for n in self.neurons])
+        return '- %s Layer:\n' % self.name + '\n'.join(['  + ' + str(n) for n in self.neurons])
 
     __repr__ = __str__
