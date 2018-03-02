@@ -1,14 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+_pairno_ = 'XX'
+_authors_ = 'Sergio Fuentes, Adrián Muñoz'
+
 import sys
 import numpy as np
+import argparse as ap
 from mp_neuron import MPNeuron
 from layer import Layer
 from synapse import Synapse
 from network import Network
 
 def main():
+    parser = ap.ArgumentParser(description='Práctica 1 - McCulloch-Pitts\nPareja {}: {}'.format(_pairno_, _authors_))
+    parser.add_argument('-i', '--input', help='Input file', required=True)
+    parser.add_argument('-o', '--output', help='Output file', required=True)
+    args = vars(parser.parse_args())
+
     inputNeurons = [MPNeuron('input%d' % i, 1) for i in range(3)]
     memoryNeurons = [MPNeuron('memory%d' % i, 1) for i in range(3)]
     detectUpNeurons = [MPNeuron('detectUp%d' % i, 2) for i in range(3)]
@@ -36,7 +45,7 @@ def main():
 
     print(network)
 
-    with open('data/McCulloch_Pitts.txt') as filein, open('output.txt', 'w') as fileout:
+    with open(args['input']) as filein, open(args['output'], 'w') as fileout:
         datain = [np.asarray(line.split(' ')).astype(float) for line in filein.read().splitlines()]
         dataout = network.run(datain)
         for line in dataout:
