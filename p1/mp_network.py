@@ -8,6 +8,10 @@ from network import Network
 
 
 class MPNetwork(Network):
+    input_layer = None
+    output_layer = None
+    hidden_layers = None
+    synapses = None
     time = None
 
     def __init__(self, name, input_layer, output_layer, hidden_layers, synapses):
@@ -21,7 +25,7 @@ class MPNetwork(Network):
         self.time = 0
 
     def __str__(self):
-        return 'MP-' + super(MPNetwork, self).__str__()
+        return 'MP-' + super(MPNetwork, self).__str__() + '\nLayers:\n' + '\n'.join([str(l) for l in [self.input_layer, self.output_layer] + self.hidden_layers]) + '\nSynapses:\n' + '\n'.join([str(s) for s in sum(self.synapses.values(), [])])
 
     def feel(self, values):
         if len(self.input_layer) != len(values):
