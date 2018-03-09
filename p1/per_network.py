@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from collections import defaultdict
-from copy import deepcopy
 from network import Network
 
 
@@ -12,6 +10,7 @@ class PerNetwork(Network):
     output_length = None
     theta = None
     learn_rate = None
+    synapses = None
 
     def __init__(self, name, input_length, output_length, theta, learn_rate):
         super(PerNetwork, self).__init__(name)
@@ -19,26 +18,43 @@ class PerNetwork(Network):
         self.output_length = output_length
         self.theta = theta
         self.learn_rate = learn_rate
-        self.time = 0
+        self.synapses = np.zeros((self.output_length, self.input_length + 1))
 
     def __str__(self):
         return 'Per-' + super(PerNetwork, self).__str__()
 
-    def run(self, datain, verbose=False):
+    def train(self, datain, verbose=False):
         # Set weights to zero
-        synapses = np.zeros((self.input_length + 1, self.output_length))
-        for i in len(datain):
+        self.synapses.fill(0)
+        for i in range(len(datain)):
             data = datain[i][:-self.output_length]
             expect = datain[i][-self.output_length:]
             # Evaluate the network for the input
-            y_in = np.dot(synapses, np.hstack((1, data)))
+            print(self.synapses, data, expect)
+            y_in = np.dot(self.synapses, np.hstack((1, data)))
             y = np.zeros(y_in.shape, dtype=int)
             y[y_in < -self.theta] = -1
-            y[y_in > -self.theta] = 1
+            y[y_in > self.theta] = 1
             # Adjust weights
             errors = np.where(y != expect)[0]
-            if not list(errors):
-                break
+            print('errors = {}'.format(errors))
+            # if not list(errors):
+            #    break
             for j in errors:
-                synapses[j] = synapses[j] + self.learn_rate * expect[j]
+                print(expect[j])
+                self.synapses[j] = self.synapses[j] + \
+                    self.learn_rate * expect[j]
+                print('Updating {} with value {}.'.format(
+                    self.synapses[j], self.learn_rate * expect[j]))
 
+    def run(self, datain, verbose=False):
+        dataout = []
+        for i in range(len(datain)):
+            data = datain[i][:-self.output_length]
+            # Evaluate the network for the input
+            y_in = np.dot(self.synapses, np.hstack((1, data)))
+            y = np.zeros(y_in.shape, dtype=int)
+            y[y_in < -self.theta] = -1
+            y[y_in > self.theta] = 1
+            dataout.append(' '.join([str(x) for x in y]))
+        return dataout
