@@ -1,9 +1,6 @@
-0#!/usr/bin/env python3
+0  # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import numpy as np
-from collections import defaultdict
-from copy import deepcopy
 from abc import ABC, abstractmethod
 
 
@@ -14,8 +11,9 @@ class Network(ABC):
         self.name = name
 
     def __str__(self):
-        header = 'NETWORK \'%s\'\n' % self.name
-        return header + ('=' * (len(header)-1))
+        header = self.__class__.__name__ + " '{}'".format(self.name)
+        bar = '=' * len(header)
+        return '\n'.join([bar, header, bar])
 
     __repr__ = __str__
 

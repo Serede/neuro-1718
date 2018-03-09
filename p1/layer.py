@@ -14,6 +14,8 @@ class Layer:
         return len(self.neurons)
 
     def __str__(self):
-        return '- %s Layer:\n' % self.name + '\n'.join(['  + ' + str(n) for n in self.neurons])
+        head = self.__class__.__name__ + " '{}':\n".format(self.name)
+        body = '\n'.join(['  + ' + str(n) for n in self.neurons])
+        return head + body
 
     __repr__ = __str__

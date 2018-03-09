@@ -13,6 +13,6 @@ class Synapse:
         self.weight = weight
 
     def __str__(self):
-        return '- %s --(%d)-> %s' % (self.origin, self.weight, self.target)
+        return '{} --[{}]-> {}'.format(self.origin, self.weight, self.target)
 
     __repr__ = __str__

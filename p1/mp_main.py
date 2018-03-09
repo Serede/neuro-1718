@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-_pairno_ = '08'
-_authors_ = 'Sergio Fuentes, Adrián Muñoz'
-
-import sys
 import numpy as np
-import argparse as ap
+from argparse import ArgumentParser, RawTextHelpFormatter
 from mp_neuron import MPNeuron
 from layer import Layer
 from synapse import Synapse
 from mp_network import MPNetwork
+from metadata import _COURSE_, _YEAR_, _TITLE_, _PAIR_, _AUTHORS_
 
 
 def main():
-    parser = ap.ArgumentParser(
-        description='Práctica 1 - McCulloch-Pitts\nPareja {}: {}'.format(_pairno_, _authors_))
-    parser.add_argument('-i', '--input', help='Input file', required=True)
-    parser.add_argument('-o', '--output', help='Output file', required=True)
-    parser.add_argument('-v', '--verbose', help='Display network steps',
-                        action='store_true', required=False)
+    description = '{} {}\n{}. McCulloch-Pitts\nPareja {}: {}'.format(
+        _COURSE_, _YEAR_, _TITLE_, _PAIR_, ' y '.join(_AUTHORS_))
+    parser = ArgumentParser(description=description,
+                            formatter_class=RawTextHelpFormatter)
+    parser.add_argument(
+        '-i', '--input', help='Input file', required=True)
+    parser.add_argument(
+        '-o', '--output', help='Output file', required=True)
+    parser.add_argument(
+        '-v', '--verbose', help='Display steps', action='store_true')
     args = vars(parser.parse_args())
 
     inputNeurons = [MPNeuron('input%d' % i, 1) for i in range(3)]
@@ -29,14 +30,15 @@ def main():
     outputNeurons = [MPNeuron('output%d' % i, 1) for i in range(2)]
 
     inputLayer = Layer('Input', inputNeurons)
-    memoryLayer = Layer('Memory', memoryNeurons)
-    detectLayer = Layer('Detect', detectUpNeurons + detectDownNeurons)
+
     outputLayer = Layer('Output', outputNeurons)
 
+    memoryLayer = Layer('Memory', memoryNeurons)
+    detectLayer = Layer('Detect', detectUpNeurons + detectDownNeurons)
     hiddenLayers = [memoryLayer, detectLayer]
 
-    memorySynapses = [Synapse(inputNeurons[i], memoryNeurons[i], 1)
-                      for i in range(3)]
+    memorySynapses = [
+        Synapse(inputNeurons[i], memoryNeurons[i], 1) for i in range(3)]
     inputUpSynapses = [
         Synapse(inputNeurons[i], detectUpNeurons[i], 1) for i in range(3)]
     inputDownSynapses = [
@@ -53,15 +55,18 @@ def main():
     synapses = memorySynapses + inputUpSynapses + inputDownSynapses + \
         memoryUpSynapses + memoryDownSynapses + outputUpSynapses + outputDownSynapses
 
-    network = MPNetwork('MPNetwork', inputLayer,
-                        outputLayer, hiddenLayers, synapses)
+    network = MPNetwork(
+        'MPNetwork', inputLayer, outputLayer, hiddenLayers, synapses)
 
     print(network)
 
-    with open(args['input']) as filein, open(args['output'], 'w') as fileout:
+    with open(args['input']) as filein:
         datain = [np.asarray(line.split(' ')).astype(float)
                   for line in filein.read().splitlines()]
-        dataout = network.run(datain, verbose=args['verbose'])
+
+    dataout = network.run(datain, verbose=args['verbose'])
+
+    with open(args['output'], 'w') as fileout:
         for line in dataout:
             fileout.write('{}\n'.format(line))
 

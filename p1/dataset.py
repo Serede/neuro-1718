@@ -1,38 +1,40 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import numpy as np
 
 
 class Dataset:
 
-    input_size = None
-    output_size = None
-    number_of_instances = None
+    input_length = None
+    output_length = None
+    input_data = None
+    output_data = None
+    instance_count = None
 
-    input = None
-    output = None
+    def __init__(self, filename):
+        with open(filename, 'r') as file:
+            # Load metadata
+            [len_in, len_out] = file.readline().split()
+            self.input_length = int(len_in)
+            self.output_length = int(len_out)
 
-    def make_partitions(self):
+            # Load dataset
+            data = np.asarray([l.split() for l in file.read().splitlines()])
+
+            self.input_data = data[:, :self.input_length].astype(float)
+            self.output_data = data[:, self.input_length:].astype(int)
+
+            self.instance_count = int(self.input_data.shape[0])
+
+    def partition(self, ratio):
         pass
 
-    def load(self, file_name):
-        with open(file_name, 'r') as file:
-            # load metadata
-            shape = np.asarray(file.readline().split())
-            self.input_size = int(shape[0])
-            self.output_size = int(shape[1])
+    def errors(self, result_data):
+        for i in range(self.instance_count):
+            if not (result_data[i] == self.output_data[i]).all():
+                print("Mismatch for instance {}: expected {} but got {}.".format(
+                    i, self.output_data[i], result_data[i]))
 
-            # Load the dataset
-            data = np.asarray([line.split() for line in file.read().splitlines()])
-
-            self.input = data[:, :self.input_size].astype(float)
-            self.output = data[:, self.input_size:].astype(int)
-
-            self.number_of_instances = int(self.input.shape[0])
-
-    def errors(self,results):
-
-        for index in range(self.number_of_instances):
-            if not (results[index] == self.output[index]).all():
-                print("Mismatch in instance {}: expected {}, got {}.".format(index, self.output[index], results[index]))
-
-    def score(self,results):
-        return (results == self.output).sum(axis=0) / self.number_of_instances
+    def score(self, result_data):
+        return (result_data == self.output_data).sum(axis=0) / self.instance_count

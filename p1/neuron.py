@@ -11,7 +11,7 @@ class Neuron(ABC):
         self.name = name
 
     def __str__(self):
-        return '[%s]' % self.name
+        return self.__class__.__name__ + str(self.__dict__).replace("'", "")
 
     __repr__ = __str__
 

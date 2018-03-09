@@ -9,12 +9,9 @@ class MPNeuron(Neuron):
     value = None
 
     def __init__(self, name, theta, value=0):
+        super(MPNeuron, self).__init__(name)
         self.theta = theta
         self.value = value
-        super(MPNeuron, self).__init__(name)
-
-    def __str__(self):
-        return 'MP' + super(MPNeuron, self).__str__() + '{{th = {}, v = {}}}'.format(self.theta, self.value)
 
     def f(self, y_in):
         self.value = int(y_in >= self.theta)
