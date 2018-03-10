@@ -15,17 +15,13 @@ class PerNetwork(Network):
     bias = None
 
     def __init__(self, name, input_length, output_length, theta, learn):
-
         super(PerNetwork, self).__init__(name)
         self.input_length = input_length
         self.output_length = output_length
         self.theta = theta
-
         if not 0 < learn <= 1:
-            raise ValueError("Learn rate must be between 0 and 1")
-
+            raise ValueError('Learning rate must be within 0 and 1')
         self.learn = learn
-
         self.synapses = np.zeros(shape=(self.output_length, self.input_length))
         self.bias = np.zeros(shape=(self.output_length,))
 
@@ -34,75 +30,66 @@ class PerNetwork(Network):
         body = ''
         return '\n'.join([head, body])
 
-    def train(self, train_input, train_output, verbose=False):
+    def classify_i(self, datain):
+        y_in = np.dot(self.synapses, datain) + self.bias
+        y = np.zeros(shape=y_in.shape, dtype=int)
+        y[y_in < -self.theta] = -1
+        y[y_in > self.theta] = 1
+        return y
 
-        updated = True
+    def classify(self, datain):
+        return np.vstack(tuple(map(lambda x: self.classify_i(x), datain)))
 
-        # When during a epoch at least one instance updates weights:
-        while updated:
-
-            updated = False
-
-            CIONTADRO = 0
-            for input,output in zip(train_input,train_output):
-                print(CIONTADRO); CIONTADRO+=1
-                row_updated = self.__train_one__(input, output)
-                updated = updated or row_updated
-
-            print("***" * 10, self.score(train_input, train_output))
-
-        return
-
-    def __train_one__(self, train_input, train_output):
-
-        output = self.__eval_one__(train_input)
-        print("EX:",train_output,"GOT:",output)
-        print("Weights Before",self.synapses)
-        errors = (output != train_output)
+    def train_i(self, datain, dataout, verbose=False):
+        y = self.classify_i(datain)
+        if verbose:
+            print("EX:", dataout, "GOT:", y)
+            print("Weights Before", self.synapses)
+        errors = (y != dataout)
 
         updated = False
-
-        for i in range(output.shape[0]):
+        for i in range(y.shape[0]):
             if errors[i]:
+                delta_synapses = self.learn * dataout[i] * datain
+                delta_bias = self.learn * dataout[i]
 
-                delta_synapses = self.learn * train_output[i] * train_input
-                delta_bias = self.learn * train_output[i]
-
-                self.synapses[i] = self.synapses[i] + delta_synapses
-                self.bias[i] = self.bias[i] + delta_bias
+                self.synapses[i] += delta_synapses
+                self.bias[i] += delta_bias
 
                 if (delta_bias != 0).any() or (delta_synapses != 0).any():
                     updated = True
 
-        print("Weights After",self.synapses)
-        print("Updated:",updated)
-        print("*"*10)
+        if verbose:
+            print("Weights After", self.synapses)
+            print("Updated:", updated)
+            print("*"*10)
         return updated
 
-    def eval(self, input):
-        return np.vstack(tuple(map(lambda instance: self.__eval_one__(instance), input)))
+    def train(self, datain, dataout, verbose=False):
+        updated = True
+        # When during a epoch at least one instance updates weights:
+        while updated:
+            updated = False
+            CIONTADRO = 0
+            for input, output in zip(datain, dataout):
+                if verbose:
+                    print(CIONTADRO)
+                    CIONTADRO += 1
+                row_updated = self.train_i(input, output, verbose=verbose)
+                updated = updated or row_updated
+            if verbose:
+                print("***" * 10, self.score(datain, dataout))
 
-    def __eval_one__(self, input):
+        return
 
-        y_in = np.dot(self.synapses, input) + self.bias
-
-        y = np.zeros(shape=y_in.shape, dtype=int)
-
-        y[y_in < -self.theta] = -1
-        y[y_in > self.theta] = 1
-
-        return y
-
-    def score(self, test_input, test_output):
-        output = self.eval(test_input)
-
-        score = (test_output == output).sum() / test_output.size
-
+    def score(self, test_in, test_out):
+        res = self.classify(test_in)
+        score = (test_out == res).sum() / test_out.size
         return score
 
     def run(self, datain, verbose=False):
         dataout = []
         for i in range(len(datain)):
-            y = eval(datain[i])
+            y = self.classify(datain[i])
             dataout.append(' '.join([str(x) for x in y]))
         return dataout
