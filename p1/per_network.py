@@ -3,6 +3,7 @@
 
 import numpy as np
 from network import Network
+from copy import deepcopy
 
 
 class PerNetwork(Network):
@@ -11,32 +12,74 @@ class PerNetwork(Network):
     theta = None
     learn = None
     synapses = None
+    bias = None
 
     def __init__(self, name, input_length, output_length, theta, learn):
+
         super(PerNetwork, self).__init__(name)
         self.input_length = input_length
         self.output_length = output_length
         self.theta = theta
+
+        if not 0 < learn <= 1:
+            raise ValueError("Learn rate must be between 0 and 1")
+
         self.learn = learn
-        self.synapses = np.zeros((self.output_length, self.input_length + 1))
+
+        self.synapses = np.zeros(shape=(self.output_length, self.input_length))
+        self.bias = np.zeros(shape=(self.output_length,))
 
     def __str__(self):
         head = super(PerNetwork, self).__str__()
         body = ''
         return '\n'.join([head, body])
 
-    def eval(self, data):
-        y_in = np.dot(self.synapses, np.hstack((1, data)))
-        y = np.zeros(y_in.shape, dtype=int)
+    def train(self, train_input, train_output, verbose=False):
+
+        while True:
+            previous_w = deepcopy(self.synapses)
+            previous_b = deepcopy(self.bias)
+
+            for index in range(train_input.shape[0]):
+                self.__train_one__(train_input[index], train_output[index])
+                print(self.__eval_one__(train_input[index]), train_output[index])
+
+            if (previous_w == self.synapses).all() and (previous_b == self.bias).all():
+                break
+
+        return
+
+    def __train_one__(self, train_input, train_output):
+
+        output = self.__eval_one__(train_input)
+
+        errors = (output != train_output)
+
+        if errors.any():
+            self.synapses[errors] = self.synapses[errors] + self.learn * train_output[errors] * train_input
+
+            self.bias[errors] = self.bias[errors] + self.learn * train_output[errors]
+
+    def eval(self, input):
+        return np.vstack(tuple(map(lambda instance: self.__eval_one__(instance), input)))
+
+    def __eval_one__(self, input):
+
+        y_in = np.dot(self.synapses, input) + self.bias
+
+        y = np.zeros(shape=y_in.shape, dtype=int)
+
         y[y_in < -self.theta] = -1
         y[y_in > self.theta] = 1
+
         return y
 
-    def train(self, datain, dataout, verbose=False):
-        for i in range(len(datain)):
-            y = eval(datain[i])
-            for j in np.where(y != dataout)[0]:
-                self.synapses[j] += self.learn * dataout[j]
+    def score(self, test_input, test_output):
+        output = self.eval(test_input)
+
+        score = (test_output == output).sum() / test_output.size
+
+        return score
 
     def run(self, datain, verbose=False):
         dataout = []
