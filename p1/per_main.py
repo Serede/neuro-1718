@@ -90,6 +90,7 @@ def main():
 
     elif args['mode'] == 'mode2':
 
+        print("Exec mode 2")
         mode_2(args)
 
 

@@ -36,29 +36,41 @@ class PerNetwork(Network):
 
     def train(self, train_input, train_output, verbose=False):
 
-        while True:
-            previous_w = deepcopy(self.synapses)
-            previous_b = deepcopy(self.bias)
+        updated = True
 
-            for index in range(train_input.shape[0]):
-                self.__train_one__(train_input[index], train_output[index])
-                print(self.__eval_one__(train_input[index]), train_output[index])
+        while updated:
 
-            if (previous_w == self.synapses).all() and (previous_b == self.bias).all():
-                break
+            updated = False
+
+            for input,output in zip(train_input,train_output):
+                updated = updated or self.__train_one__(input, output)
+
+            print("***" * 10, self.score(train_input, train_output))
 
         return
 
     def __train_one__(self, train_input, train_output):
 
         output = self.__eval_one__(train_input)
+        print(output,"->" ,train_output)
 
         errors = (output != train_output)
 
-        if errors.any():
-            self.synapses[errors] = self.synapses[errors] + self.learn * train_output[errors] * train_input
+        updated = False
 
-            self.bias[errors] = self.bias[errors] + self.learn * train_output[errors]
+        for i in range(output.shape[0]):
+            if errors[i]:
+
+                delta_synapses = self.learn * train_output[i] * train_input
+                delta_bias = self.learn * train_output[i]
+
+                self.synapses[i] = self.synapses[i] + delta_synapses
+                self.bias[i] = self.bias[i] + delta_bias
+
+                if (delta_bias != 0).any() or (delta_synapses != 0).any():
+                    updated = True
+
+        return updated
 
     def eval(self, input):
         return np.vstack(tuple(map(lambda instance: self.__eval_one__(instance), input)))
