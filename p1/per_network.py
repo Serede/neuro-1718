@@ -38,12 +38,16 @@ class PerNetwork(Network):
 
         updated = True
 
+        # When during a epoch at least one instance updates weights:
         while updated:
 
             updated = False
 
+            CIONTADRO = 0
             for input,output in zip(train_input,train_output):
-                updated = updated or self.__train_one__(input, output)
+                print(CIONTADRO); CIONTADRO+=1
+                row_updated = self.__train_one__(input, output)
+                updated = updated or row_updated
 
             print("***" * 10, self.score(train_input, train_output))
 
@@ -52,8 +56,8 @@ class PerNetwork(Network):
     def __train_one__(self, train_input, train_output):
 
         output = self.__eval_one__(train_input)
-        print(output,"->" ,train_output)
-
+        print("EX:",train_output,"GOT:",output)
+        print("Weights Before",self.synapses)
         errors = (output != train_output)
 
         updated = False
@@ -70,6 +74,9 @@ class PerNetwork(Network):
                 if (delta_bias != 0).any() or (delta_synapses != 0).any():
                     updated = True
 
+        print("Weights After",self.synapses)
+        print("Updated:",updated)
+        print("*"*10)
         return updated
 
     def eval(self, input):
