@@ -12,7 +12,7 @@ class Dataset:
     output_data = None
     instance_count = None
 
-    def __init__(self, filename):
+    def __init__(self, filename, binary=True):
         with open(filename, 'r') as file:
             # Load metadata
             [len_in, len_out] = file.readline().split()
@@ -24,6 +24,8 @@ class Dataset:
 
             self.input_data = data[:, :self.input_length].astype(float)
             self.output_data = data[:, self.input_length:].astype(int)
+            if binary:
+                self.output_data = 2*self.output_data - 1
 
             self.instance_count = int(self.input_data.shape[0])
 

@@ -77,19 +77,16 @@ class PerNetwork(Network):
                     CIONTADRO += 1
                 row_updated = self.train_i(input, output, verbose=verbose)
                 updated = updated or row_updated
+            print('SCORE: ', self.score(datain, dataout))
             if verbose:
                 print("***" * 10, self.score(datain, dataout))
 
         return
 
-    def score(self, test_in, test_out):
-        res = self.classify(test_in)
-        score = (test_out == res).sum() / test_out.size
+    def score(self, datain, dataout):
+        res = self.classify(datain)
+        score = (dataout == res).sum() / dataout.size
         return score
 
     def run(self, datain, verbose=False):
-        dataout = []
-        for i in range(len(datain)):
-            y = self.classify(datain[i])
-            dataout.append(' '.join([str(x) for x in y]))
-        return dataout
+        return self.classify(datain)
