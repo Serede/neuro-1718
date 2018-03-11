@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-
+from copy import deepcopy
 
 class Dataset:
 
     input_length = None
     output_length = None
+    instance_count = None
+
     input_data = None
     output_data = None
-    instance_count = None
 
     def __init__(self, filename, binary=True):
         with open(filename, 'r') as file:
@@ -24,8 +25,11 @@ class Dataset:
 
             self.input_data = data[:, :self.input_length].astype(float)
             self.output_data = data[:, self.input_length:].astype(int)
+
             if binary:
-                self.output_data = 2*self.output_data - 1
+                self.output_data[self.output_data == -1] = 0
+            else:
+                self.output_data[self.output_data == 0] = -1
 
             self.instance_count = int(self.input_data.shape[0])
 
@@ -40,3 +44,19 @@ class Dataset:
 
     def score(self, result_data):
         return (result_data == self.output_data).sum(axis=0) / self.instance_count
+
+
+def btp(vector):
+    polar = deepcopy(vector)
+
+    polar[polar == 0] = -1
+
+    return polar
+
+def ptb(vector):
+    binary = deepcopy(vector)
+
+    binary[binary == -1] = 0
+
+    return binary
+
