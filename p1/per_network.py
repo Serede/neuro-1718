@@ -3,6 +3,7 @@
 
 import numpy as np
 from network import Network
+from dataset import btp, ptb
 from copy import deepcopy
 
 
@@ -30,63 +31,87 @@ class PerNetwork(Network):
         body = ''
         return '\n'.join([head, body])
 
-    def classify_i(self, datain):
+    def classify_i_p(self, datain):
+        """
+        The output is polar
+        :param datain:
+        :return:
+        """
         y_in = np.dot(self.synapses, datain) + self.bias
         y = np.zeros(shape=y_in.shape, dtype=int)
+
         y[y_in < -self.theta] = -1
         y[y_in > self.theta] = 1
+
         return y
 
-    def classify(self, datain):
-        return np.vstack(tuple(map(lambda x: self.classify_i(x), datain)))
+    def classify(self, datain, binary_output=True):
+        polar = np.vstack(tuple(map(lambda x: self.classify_i_p(x), datain)))
+        if binary_output:
+            return ptb(polar)
+        else:
+            return polar
 
-    def train_i(self, datain, dataout, verbose=False):
-        y = self.classify_i(datain)
+    def train_i_p(self, datain, dataout_polar, verbose=False):
+        """
+        Espects the output in polar
+        :param datain:
+        :param dataout_polar:
+        :param verbose:
+        :return:
+        """
+        y = self.classify_i_p(datain)
+
         if verbose:
-            print("EX:", dataout, "GOT:", y)
+            print("EX:", dataout_polar, "GOT:", y)
             print("Weights Before", self.synapses)
-        errors = (y != dataout)
+        errors = (y != dataout_polar)
 
-        updated = False
-        for i in range(y.shape[0]):
-            if errors[i]:
-                delta_synapses = self.learn * dataout[i] * datain
-                delta_bias = self.learn * dataout[i]
+        delta_synapses = self.learn * np.dot(dataout_polar.reshape((1,-1)).T,datain.reshape((1,-1)))
+        delta_bias = self.learn * dataout_polar
 
-                self.synapses[i] += delta_synapses
-                self.bias[i] += delta_bias
+        self.synapses[errors] += delta_synapses[errors]
+        self.bias[errors] += delta_bias[errors]
 
-                if (delta_bias != 0).any() or (delta_synapses != 0).any():
-                    updated = True
+        if (delta_bias != 0).any() or (delta_synapses != 0).any():
+            updated = True
 
         if verbose:
             print("Weights After", self.synapses)
             print("Updated:", updated)
-            print("*"*10)
+            print("*" * 10)
+
         return updated
 
     def train(self, datain, dataout, verbose=False):
         updated = True
+
+        dataout_polar = btp(dataout)
+
         # When during a epoch at least one instance updates weights:
         while updated:
             updated = False
             CIONTADRO = 0
-            for input, output in zip(datain, dataout):
+            for input, output in zip(datain, dataout_polar):
                 if verbose:
                     print(CIONTADRO)
                     CIONTADRO += 1
-                row_updated = self.train_i(input, output, verbose=verbose)
+                row_updated = self.train_i_p(input, output, verbose=verbose)
+
                 updated = updated or row_updated
-            print('SCORE: ', self.score(datain, dataout))
+            print('SCORE: ', self.score(datain, dataout_polar))
             if verbose:
-                print("***" * 10, self.score(datain, dataout))
+                print("***" * 10, self.score(datain, dataout_polar))
 
         return
 
     def score(self, datain, dataout):
-        res = self.classify(datain)
-        score = (dataout == res).sum() / dataout.size
+
+        dataout_binary = ptb(dataout)
+
+        res = self.classify(datain, binary_output=True)
+        score = (dataout_binary == res).sum() / dataout_binary.size
         return score
 
-    def run(self, datain, verbose=False):
-        return self.classify(datain)
+    def run(self, datain, binary_output=True, verbose=False):
+        return self.classify(datain, binary_output)

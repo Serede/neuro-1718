@@ -1,8 +1,9 @@
 import numpy as np
 from network import Network
+from dataset import btp, ptb
 
 __default_max_epoch__ = 100
-__tolerance_threshold__ = 0.05
+__default_threshold__ = 0.01
 
 
 class AdaNetwork(Network):
@@ -16,45 +17,93 @@ class AdaNetwork(Network):
         self.output_size = output_size
         self.theta = 0
 
-        self.input = np.zeros(shape=(input_size,))
-        self.output = np.zeros(shape=(output_size,))
-
         self.learn_rate = learn_rate
-        self.bias = np.zeros(shape=(output_size,))
-        self.weights = np.zeros(shape=(output_size, input_size))
+        self.bias = np.random.uniform(-1., 1., output_size)
+        self.synapses = np.random.uniform(-1., 1., input_size * output_size).reshape((output_size, input_size))
 
     def __str__(self):
         return 'Ada-' + super(AdaNetwork, self).__str__()
 
-    def train(self, datain_train, expected_result_train, max_epoch=__default_max_epoch__,
-              tolerance_threshold=__tolerance_threshold__):
+    def train(self, input_train, output_train, max_epoch=__default_max_epoch__,
+              threshold=__default_threshold__):
+
+        output_train_polar = btp(output_train)
 
         epochs = 0
-        error_percentage = 1.
+        delta = np.inf
 
-        while tolerance_threshold < error_percentage and epochs < max_epoch:
-            self.train_all_instances(datain_train, expected_result_train)
+        while threshold < delta and epochs < max_epoch:
+            delta = self.train_all_instances(input_train, output_train_polar)
             epochs += 1
 
         return
 
-    def train_all_instances(self, instances_attributes, expected_results):
-        for instance_attributtes, instance_result in zip(instances_attributes, expected_results):
-            self.train_one_instance(instance_attributtes, instance_result)
+    def train_all_instances(self, input_polar, output_polar):
 
-    def train_one_instance(self, attributtes, expected_result):
-        self.set_input(attributtes)
-        self.calculate()
-        self.adjust(expected_result)
+        delta = -np.inf
 
-    def set_input(self,attributes):
-        self.input = attributes
+        for input_i, output_i in zip(input_polar, output_polar):
+            delta = max(delta, self.train_i(input_i, output_i))
+        print('SCORE: ', self.score(input_polar, output_polar))
 
-    def calculate(self):
-        self.output = (0<= (np.dot(self.weights,self.input) + self.bias))
-        return self.output
+        return delta
 
-    def adjust(self,expected_result):
-        # wi(nuevo) = wi(anterior)+ a(t-y_in)x
+    def train_i(self, input_i, output_i):
 
-        self.weights = self.weights + self.learn_rate*np.dot((expected_result - self.output), self.input)
+        y_in = np.dot(self.synapses, input_i) + self.bias
+
+        delta_w = self.learn_rate * np.dot((output_i - y_in).reshape((self.output_size, 1)),
+                                           input_i.reshape((1, self.input_size)))
+        # print("*"*20)
+        # print("t:",output_i)
+        # print("y:",y)
+        # print("t-y:",(output_i - y))
+        # print("t-y:",(output_i - y).reshape((self.output_size, 1)))
+        # print("x:",input_i)
+        # print("x:",input_i.reshape((1, -1)))
+        # print("(t-y)x:",np.dot((output_i - y).reshape((self.output_size, 1)), input_i.reshape((1, -1))))
+        # print("a(t-y)x:",delta_w)
+        # print(">"*20)
+
+        delta_b = self.learn_rate * (output_i - y_in)
+
+        self.synapses = self.synapses + delta_w
+        self.bias = self.bias + delta_b
+
+        max_delta_w = np.max(np.abs(delta_w))
+        max_delta_b = np.max(np.abs(delta_b))
+        max_delta = max([max_delta_b, max_delta_w])
+
+        return max_delta
+
+    def classify_i_p(self, datain):
+        """
+        The output is polar
+        :param datain:
+        :return:
+        """
+        y_in = np.dot(self.synapses, datain) + self.bias
+        y = np.zeros(shape=y_in.shape, dtype=int)
+
+        y[y_in < 0] = -1
+        y[y_in > 0] = 1
+
+        return y
+
+    def classify(self, datain, binary_output=True):
+        polar = np.vstack(tuple(map(lambda x: self.classify_i_p(x), datain)))
+        if binary_output:
+            return ptb(polar)
+        else:
+            return polar
+
+    def score(self, datain, dataout):
+        dataout_binary = ptb(dataout)
+
+        res = self.classify(datain, binary_output=True)
+        score = (dataout_binary == res).sum() / dataout_binary.size
+
+        return score
+
+    def run(self, datain, binary_output=True, verbose=False):
+        return self.classify(datain, binary_output)
