@@ -33,6 +33,7 @@ class AdaNetwork(Network):
         delta = np.inf
 
         while threshold < delta and epochs < max_epoch:
+            print(delta,threshold)
             delta = self.train_all_instances(input_train, output_train_polar)
             epochs += 1
 

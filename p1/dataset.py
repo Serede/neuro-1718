@@ -45,6 +45,37 @@ class Dataset:
     def score(self, result_data):
         return (result_data == self.output_data).sum(axis=0) / self.instance_count
 
+    def confussion_matrix(self, result_data):
+
+        if result_data.shape != self.output_data.shape:
+            raise ValueError("Shape of the result mismatch. Expected {}, got {}".format(self.output_data.shape,result_data.shape))
+
+        # One matrix per output!
+        l_matrices = []
+        l_values = []
+
+        # for each output
+        for output_index in range(self.output_length):
+
+            # Build the dictionary for each output and reate the matrix
+            output_expected = self.output_data.T[output_index]
+            output_calculated = result_data.T[output_index]
+
+            values = np.sort(np.unique(output_expected))
+            matrix = np.zeros(shape=(values.size, values.size))
+
+            indices_dict = {value: index for index, value in enumerate(values)}
+
+            # fill the matrix
+            for j in range(self.instance_count):
+                index_expected = indices_dict[output_expected[j]]
+                index_calculated = indices_dict[output_calculated[j]]
+                matrix[index_expected][index_calculated]+=1
+
+            l_matrices.append(matrix)
+            l_values.append(values)
+
+        return l_matrices, l_values
 
 def btp(vector):
     polar = deepcopy(vector)
