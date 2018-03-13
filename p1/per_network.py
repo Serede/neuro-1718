@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from network import Network
+
 from dataset import btp, ptb
-from copy import deepcopy
+from network import Network
+
+__default_max_epoch__ = 10
 
 
 class PerNetwork(Network):
@@ -15,14 +17,16 @@ class PerNetwork(Network):
     synapses = None
     bias = None
 
-    def __init__(self, name, input_length, output_length, theta, learn):
+    def __init__(self, name, input_length, output_length, theta, learn_rate):
         super(PerNetwork, self).__init__(name)
         self.input_length = input_length
         self.output_length = output_length
         self.theta = theta
-        if not 0 < learn <= 1:
+
+        if not 0 < learn_rate <= 1:
             raise ValueError('Learning rate must be within 0 and 1')
-        self.learn = learn
+
+        self.learn = learn_rate
         self.synapses = np.zeros(shape=(self.output_length, self.input_length))
         self.bias = np.zeros(shape=(self.output_length,))
 
@@ -52,9 +56,26 @@ class PerNetwork(Network):
         else:
             return polar
 
+    def train(self, datain, dataout, verbose=False, max_epoch=__default_max_epoch__):
+        updated = True
+        epoch = 0
+        dataout_polar = btp(dataout)
+
+        # When during a epoch at least one instance updates weights:
+        while updated and epoch < max_epoch:
+            updated = False
+            for input, output in zip(datain, dataout_polar):
+                row_updated = self.train_i_p(input, output, verbose=verbose)
+
+                updated = updated or row_updated
+
+            epoch += 1
+
+        return
+
     def train_i_p(self, datain, dataout_polar, verbose=False):
         """
-        Espects the output in polar
+        Expects the output in polar
         :param datain:
         :param dataout_polar:
         :param verbose:
@@ -62,12 +83,9 @@ class PerNetwork(Network):
         """
         y = self.classify_i_p(datain)
 
-        if verbose:
-            print("EX:", dataout_polar, "GOT:", y)
-            print("Weights Before", self.synapses)
         errors = (y != dataout_polar)
 
-        delta_synapses = self.learn * np.dot(dataout_polar.reshape((1,-1)).T,datain.reshape((1,-1)))
+        delta_synapses = self.learn * np.dot(dataout_polar.reshape((1, -1)).T, datain.reshape((1, -1)))
         delta_bias = self.learn * dataout_polar
 
         self.synapses[errors] += delta_synapses[errors]
@@ -76,34 +94,7 @@ class PerNetwork(Network):
         if (delta_bias != 0).any() or (delta_synapses != 0).any():
             updated = True
 
-        if verbose:
-            print("Weights After", self.synapses)
-            print("Updated:", updated)
-            print("*" * 10)
-
         return updated
-
-    def train(self, datain, dataout, verbose=False):
-        updated = True
-
-        dataout_polar = btp(dataout)
-
-        # When during a epoch at least one instance updates weights:
-        while updated:
-            updated = False
-            CIONTADRO = 0
-            for input, output in zip(datain, dataout_polar):
-                if verbose:
-                    print(CIONTADRO)
-                    CIONTADRO += 1
-                row_updated = self.train_i_p(input, output, verbose=verbose)
-
-                updated = updated or row_updated
-            print('SCORE: ', self.score(datain, dataout_polar))
-            if verbose:
-                print("***" * 10, self.score(datain, dataout_polar))
-
-        return
 
     def score(self, datain, dataout):
 

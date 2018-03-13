@@ -1,6 +1,7 @@
 import numpy as np
-from network import Network
+
 from dataset import btp, ptb
+from network import Network
 
 __default_max_epoch__ = 100
 __default_threshold__ = 0.01
@@ -33,7 +34,7 @@ class AdaNetwork(Network):
         delta = np.inf
 
         while threshold < delta and epochs < max_epoch:
-            print(delta,threshold)
+            print("Weight variation:", delta)
             delta = self.train_all_instances(input_train, output_train_polar)
             epochs += 1
 
@@ -45,6 +46,7 @@ class AdaNetwork(Network):
 
         for input_i, output_i in zip(input_polar, output_polar):
             delta = max(delta, self.train_i(input_i, output_i))
+
         print('SCORE: ', self.score(input_polar, output_polar))
 
         return delta
@@ -83,6 +85,7 @@ class AdaNetwork(Network):
         :param datain:
         :return:
         """
+
         y_in = np.dot(self.synapses, datain) + self.bias
         y = np.zeros(shape=y_in.shape, dtype=int)
 
