@@ -3,11 +3,12 @@
 
 import numpy as np
 from argparse import ArgumentParser, RawTextHelpFormatter
-from mp_neuron import MPNeuron
-from layer import Layer
-from synapse import Synapse
-from mp_network import MPNetwork
-from metadata import _COURSE_, _YEAR_, _TITLE_, _PAIR_, _AUTHORS_
+
+from __metadata__ import _COURSE_, _YEAR_, _TITLE_, _PAIR_, _AUTHORS_
+from src.mp_neuron import MPNeuron
+from src.layer import Layer
+from src.synapse import Synapse
+from src.mp_network import MPNetwork
 
 
 def main():

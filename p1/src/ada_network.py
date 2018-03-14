@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import numpy as np
 
-from dataset import btp, ptb
-from network import Network
+from src.dataset import btp, ptb
+from src.network import Network
 
 __default_max_epoch__ = 100
 __default_threshold__ = 0.01
@@ -11,31 +14,29 @@ class AdaNetwork(Network):
     input_size = None
     output_size = None
     learn_rate = None
+    bias = None
+    synapses = None
 
     def __init__(self, name, input_size, output_size, learn_rate):
         super(AdaNetwork, self).__init__(name)
         self.input_size = input_size
         self.output_size = output_size
-        self.theta = 0
-
         self.learn_rate = learn_rate
         self.bias = np.random.uniform(-1., 1., output_size)
-        self.synapses = np.random.uniform(-1., 1., input_size * output_size).reshape((output_size, input_size))
+        self.synapses = np.random.uniform(-1., 1., input_size *
+                                          output_size).reshape((output_size, input_size))
 
-    def __str__(self):
-        return 'Ada-' + super(AdaNetwork, self).__str__()
-
-    def train(self, input_train, output_train, max_epoch=__default_max_epoch__,
+    def train(self, datain, dataout, max_epoch=__default_max_epoch__,
               threshold=__default_threshold__):
 
-        output_train_polar = btp(output_train)
+        dataout_polar = btp(dataout)
 
         epochs = 0
         delta = np.inf
 
         while threshold < delta and epochs < max_epoch:
             print("Weight variation:", delta)
-            delta = self.train_all_instances(input_train, output_train_polar)
+            delta = self.train_all_instances(datain, dataout_polar)
             epochs += 1
 
         return

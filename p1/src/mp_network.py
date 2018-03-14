@@ -4,7 +4,7 @@
 import numpy as np
 from collections import defaultdict
 from copy import deepcopy
-from network import Network
+from src.network import Network
 
 
 class MPNetwork(Network):
