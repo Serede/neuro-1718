@@ -8,8 +8,8 @@ from src.mode_parser import build_mode_subparser, mode1, mode2, mode3
 from src.ada_network import AdaNetwork
 from src.dataset import Dataset
 
-_input_ = 0
-_output_ = 1
+_in_ = 0
+_out_ = 1
 
 
 def build_parser():
@@ -23,7 +23,7 @@ def build_parser():
     parser.add_argument(
         '-l', '--learn', help='Learning rate', required=True)
     parser.add_argument(
-        '-e', '--epochs', help='Maximum number of epochs to train', required=True)
+        '-e', '--epoch', help='Maximum number of epochs to train', required=True)
     parser.add_argument(
         '-v', '--verbose', help='Display steps', action='store_true')
 
@@ -31,10 +31,6 @@ def build_parser():
 
 
 def main():
-    size = None
-    train_data = None
-    test_data = None
-
     parser = build_parser()
     build_mode_subparser(parser)
 
@@ -45,21 +41,21 @@ def main():
     learn = float(args['learn'])
 
     if args['mode'] == 'mode1':
-        size, train_data, test_data = mode1(args['data'], args['ratio'])
+        shape, train_data, test_data = mode1(args['data'], args['ratio'])
 
     elif args['mode'] == 'mode2':
-        size, train_data, test_data = mode2(args['data'])
+        shape, train_data, test_data = mode2(args['data'])
 
     elif args['mode'] == 'mode3':
-        size, train_data, test_data = mode3(args['train'], args['test'])
+        shape, train_data, test_data = mode3(args['train'], args['test'])
 
     network = AdaNetwork(
-        'AdaNetwork', size[_input_], size[_output_], learn_rate=learn)
+        'AdaNetwork', shape[_in_], shape[_out_], learn_rate=learn)
     print(network)
 
-    network.train(train_data[_input_], train_data[_output_],
+    network.train(train_data[_in_], train_data[_out_],
                   max_epoch=epoch, threshold=threshold)
-    network.run(test_data[_input_])
+    network.run(test_data[_in_])
 
 
 if __name__ == "__main__":
