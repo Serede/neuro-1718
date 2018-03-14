@@ -4,58 +4,65 @@ digraph mcculloch_pitts {
 
 	node [shape = circle];
 
-	x_1 [label = <x<SUB>1</SUB>>, group=main]
-	x_2 [label = <x<SUB>2</SUB>>, group=main]
-	x_3 [label = <x<SUB>3</SUB>>, group=main]
+	subgraph X1 {
+		x_1 [label = <x<SUB>1</SUB>>];
+		m_1 [label = <m<SUB>1</SUB>>];
+		x_1 -> 	m_1 [ label = 2 ]
+	}
 
-	m_1 [label = <m<SUB>1</SUB>>]
-	m_2 [label = <m<SUB>2</SUB>>]
-	m_3 [label = <m<SUB>3</SUB>>]
+	subgraph X2 {
+		x_2 [label = <x<SUB>2</SUB>>];
+		m_2 [label = <m<SUB>2</SUB>>];
+		x_2 -> 	m_2 [ label = 2 ]
+	}
 
-	l_1 [label = <l<SUB>1</SUB>>, group=main]
-	l_2 [label = <l<SUB>2</SUB>>, group=main]
-	l_3 [label = <l<SUB>3</SUB>>, group=main]
+	subgraph X3 {
+		x_3 [label = <x<SUB>3</SUB>>, group=main];
+		m_3 [label = <m<SUB>3</SUB>>];
+		x_3 -> 	m_3 [ label = 2 ]
+	}
 
-	r_1 [label = <r<SUB>1</SUB>>, group=main]
-	r_2 [label = <r<SUB>2</SUB>>, group=main]
-	r_3 [label = <r<SUB>3</SUB>>, group=main]
+	subgraph L {
+		l_1 [label = <l<SUB>1</SUB>>, group=main]
+		l_2 [label = <l<SUB>2</SUB>>, group=main]
+		l_3 [label = <l<SUB>3</SUB>>, group=main]
 
-	z_1 [label = <z<SUB>1</SUB>>, group=main]
-	z_2 [label = <z<SUB>2</SUB>>, group=main]
+		x_1 -> l_1 [ label = 1 ]
+		x_2 -> l_2 [ label = 1 ]
+		x_3 -> l_3 [ label = 1 ]
 
-	// Memorias
-	x_1 -> 	m_1 [ label = 2 ]
-	x_2 -> 	m_2 [ label = 2 ]
-	x_3 -> 	m_3 [ label = 2 ]
-	
-	// Izquierda 
-	x_1 -> l_1 [ label = 1 ]
-	x_2 -> l_2 [ label = 1 ]
-	x_3 -> l_3 [ label = 1 ]
-	
-	m_3 -> l_1 [ label = 1 ]
-	m_1 -> l_2 [ label = 1 ]
-	m_2 -> l_3 [ label = 1 ]
+		m_3 -> l_1 [ label = 1 ]
+		m_1 -> l_2 [ label = 1 ]
+		m_2 -> l_3 [ label = 1 ]
+	}
 
-	// Derecha
-	x_1 -> r_1 [ label = 1 ]
-	x_2 -> r_2 [ label = 1 ]
-	x_3 -> r_3 [ label = 1 ]
-	
-	m_2 -> r_1 [ label = 1 ]
-	m_3 -> r_2 [ label = 1 ]
-	m_1 -> r_3 [ label = 1 ]
+	subgraph R {
+		r_1 [label = <r<SUB>1</SUB>>, group=main]
+		r_2 [label = <r<SUB>2</SUB>>, group=main]
+		r_3 [label = <r<SUB>3</SUB>>, group=main]
 
-	// Izquierda alguno
-	l_1 -> z_1 [ label = 2 ]
-	l_2 -> z_1 [ label = 2 ]
-	l_3 -> z_1 [ label = 2 ]
+		x_1 -> r_1 [ label = 1 ]
+		x_2 -> r_2 [ label = 1 ]
+		x_3 -> r_3 [ label = 1 ]
+		
+		m_2 -> r_1 [ label = 1 ]
+		m_3 -> r_2 [ label = 1 ]
+		m_1 -> r_3 [ label = 1 ]
+	}
 
-	// Derecha alguno
-	r_1 -> z_2 [ label = 2 ]
-	r_2 -> z_2 [ label = 2 ]
-	r_3 -> z_2 [ label = 2 ]
+	subgraph Z { 
+		z_1 [label = <z<SUB>1</SUB>>, group=main]
+		z_2 [label = <z<SUB>2</SUB>>, group=main]
 
+		l_1 -> z_1 [ label = 2 ]
+		l_2 -> z_1 [ label = 2 ]
+		l_3 -> z_1 [ label = 2 ]
+
+		r_1 -> z_2 [ label = 2 ]
+		r_2 -> z_2 [ label = 2 ]
+		r_3 -> z_2 [ label = 2 ]
+
+	}
 
 }
 
