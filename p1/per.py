@@ -8,8 +8,8 @@ from src.mode_parser import build_mode_subparser, mode1, mode2, mode3
 from src.dataset import Dataset
 from src.per_network import PerNetwork
 
-_input_ = 0
-_output_ = 1
+_in_ = 0
+_out_ = 1
 
 
 def build_parser():
@@ -31,13 +31,6 @@ def build_parser():
 
 
 def main():
-    size = None
-    train_data = None
-    test_data = None
-    data_set = None
-    data_set_test = None
-    data_set_train = None
-
     parser = build_parser()
     build_mode_subparser(parser)
 
@@ -49,38 +42,25 @@ def main():
 
     print("\n\n", "* " * 10)
     if args['mode'] == 'mode1':
-        size, train_data, test_data, data_set = mode1(
+        shape, train_data, test_data = mode1(
             args['data'], float(args['ratio']))
 
-        print("Total instances:", data_set.instance_count)
-        print("Train instances:", data_set.train_count)
-        print("Test instances:", data_set.test_count)
-
     elif args['mode'] == 'mode2':
-        size, train_data, test_data, data_set = mode2(args['data'])
-        print("Total instances:", data_set.instance_count)
-        print("Train instances:", data_set.instance_count)
-        print("Test instances:", data_set.instance_count)
+        shape, train_data, test_data = mode2(args['data'])
 
     elif args['mode'] == 'mode3':
-        size, train_data, test_data, data_set_train, data_set_test = mode3(
-            args['train'], args['test'])
+        shape, train_data, test_data = mode3(args['train'], args['test'])
 
-        print("Total instances:", data_set_train.instance_count +
-              data_set_test.instance_count)
-        print("Train instances:", data_set_train.instance_count)
-        print("Test instances:", data_set_test.instance_count)
-
-    network = PerNetwork(name='PerNetwork', input_length=size[_input_], output_length=size[_output_],
+    network = PerNetwork(name='PerNetwork', input_length=shape[_in_], output_length=shape[_out_],
                          theta=threshold, learn_rate=learn)
     print(network)
 
-    network.train(train_data[_input_], train_data[_output_], max_epoch=epoch)
+    network.train(train_data[_in_], train_data[_out_], max_epoch=epoch)
 
     print("Train score:", network.score(
-        train_data[_input_], train_data[_output_]))
+        train_data[_in_], train_data[_out_]))
     print("Test score:", network.score(
-        test_data[_input_], test_data[_output_]))
+        test_data[_in_], test_data[_out_]))
 
 
 if __name__ == "__main__":
