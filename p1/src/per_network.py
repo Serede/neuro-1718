@@ -3,8 +3,8 @@
 
 import numpy as np
 
-from dataset import btp, ptb
-from network import Network
+from src.dataset import btp, ptb
+from src.network import Network
 
 __default_max_epoch__ = 10
 

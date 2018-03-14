@@ -19,7 +19,7 @@ def build_mode1_parser(subparsers):
     parser.add_argument(
         '-d', '--data', help='Dataset file', required=True)
     parser.add_argument(
-        '-r', '--ratio', help='Percentage for train (e.g. 20 [20%% train/80%% test])', required=True)
+        '-r', '--ratio', help='Ratio for train (e.g. 0.2 [20%% train/80%% test])', required=True)
 
 
 def build_mode2_parser(subparsers):
