@@ -1,26 +1,27 @@
 digraph mcculloch_pitts {
 	rankdir=LR;
+	//splines=false;
 
 	node [shape = circle];
 
-	x_1 [label = <x<SUB>1</SUB>>]
-	x_2 [label = <x<SUB>2</SUB>>]
-	x_3 [label = <x<SUB>3</SUB>>]
+	x_1 [label = <x<SUB>1</SUB>>, group=main]
+	x_2 [label = <x<SUB>2</SUB>>, group=main]
+	x_3 [label = <x<SUB>3</SUB>>, group=main]
 
 	m_1 [label = <m<SUB>1</SUB>>]
 	m_2 [label = <m<SUB>2</SUB>>]
 	m_3 [label = <m<SUB>3</SUB>>]
 
-	l_1 [label = <l<SUB>1</SUB>>]
-	l_2 [label = <l<SUB>2</SUB>>]
-	l_3 [label = <l<SUB>3</SUB>>]
+	l_1 [label = <l<SUB>1</SUB>>, group=main]
+	l_2 [label = <l<SUB>2</SUB>>, group=main]
+	l_3 [label = <l<SUB>3</SUB>>, group=main]
 
-	r_1 [label = <r<SUB>1</SUB>>]
-	r_2 [label = <r<SUB>2</SUB>>]
-	r_3 [label = <r<SUB>3</SUB>>]
+	r_1 [label = <r<SUB>1</SUB>>, group=main]
+	r_2 [label = <r<SUB>2</SUB>>, group=main]
+	r_3 [label = <r<SUB>3</SUB>>, group=main]
 
-	z_1 [label = <z<SUB>1</SUB>>]
-	z_2 [label = <z<SUB>2</SUB>>]
+	z_1 [label = <z<SUB>1</SUB>>, group=main]
+	z_2 [label = <z<SUB>2</SUB>>, group=main]
 
 	// Memorias
 	x_1 -> 	m_1 [ label = 2 ]
