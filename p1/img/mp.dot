@@ -1,47 +1,30 @@
 digraph MP {
-    layout=neato;
-    rankdir=LR;
-    overlap = false;
-    splines = true;
+	graph [nodesep="0.1"];
+	rankdir=LR;
+	//splines=false;
+	//concentrate=true;
+	ranksep = 2.0;
 
-    subgraph x {
-        x1 [label=<x<SUB>1</SUB>>, pos="0,100!"];
-        x2 [label=<x<SUB>2</SUB>>, pos="0,250!"];
-        x3 [label=<x<SUB>3</SUB>>, pos="0,400!"];
-        {rank=same; x1 x2 x3}
-        x1 -> x2 -> x3 [style=invis];
-    }
+	{
+		node [shape=none];
+		theta [label="θ = 2"];
+	}
 
-    subgraph m {
-        m1 [label=<m<SUB>1</SUB>>, pos="200,100!"];
-        m2 [label=<m<SUB>2</SUB>>, pos="200,250!"];
-        m3 [label=<m<SUB>3</SUB>>, pos="200,400!"];
-        {rank=same; m1 m2 m3}
-        m1 -> m2 -> m3 [style=invis];
-    }
+	x1 [label=<x<SUB>1</SUB>>];
+	x2 [label=<x<SUB>2</SUB>>];
+	x3 [label=<x<SUB>3</SUB>>];
+	m1 [label=<m<SUB>1</SUB>>];
+	m2 [label=<m<SUB>2</SUB>>];
+	m3 [label=<m<SUB>3</SUB>>];
+	u1 [label=<u<SUB>1</SUB>>];
+	u2 [label=<u<SUB>2</SUB>>];
+	u3 [label=<u<SUB>3</SUB>>];
+	d1 [label=<d<SUB>1</SUB>>];
+	d2 [label=<d<SUB>2</SUB>>];
+	d3 [label=<d<SUB>3</SUB>>];
+	y1 [label=<y<SUB>1</SUB>>];
+	y2 [label=<y<SUB>2</SUB>>];
 
-    subgraph u {
-        u1 [label=<u<SUB>1</SUB>>, pos="400,0!"];
-        u2 [label=<u<SUB>2</SUB>>, pos="400,100!"];
-        u3 [label=<u<SUB>3</SUB>>, pos="400,200!"];
-        {rank=same; u1 u2 u3}
-        u1 -> u2 -> u3 [style=invis];
-    }
-
-    subgraph d {
-        d1 [label=<d<SUB>1</SUB>>, pos="400,300!"];
-        d2 [label=<d<SUB>2</SUB>>, pos="400,400!"];
-        d3 [label=<d<SUB>3</SUB>>, pos="400,500!"];
-        {rank=same; d1 d2 d3}
-        d1 -> d2 -> d3 [style=invis];
-    }
-
-    subgraph y {
-        y1 [label=<y<SUB>1</SUB>>, pos="600,150!"];
-        y2 [label=<y<SUB>2</SUB>>, pos="600,350!"];
-        {rank=same; y1 y2}
-        y1 -> y2 [style=invis];
-    }
 
     x1 -> d1 [label=1];
     x1 -> m1 [label=2];
@@ -64,4 +47,27 @@ digraph MP {
     d1 -> y2 [label=2];
     d2 -> y2 [label=2];
     d3 -> y2 [label=2];
+
+	edge[style=invis];
+	{
+        rank=same;
+        x1 -> x2 -> x3;
+    }
+	{
+        rank=same;
+        m1 -> m2 -> m3;
+    }
+	{
+        rank=same;
+        u1 -> u2 -> u3;
+    }
+	{
+        rank=same;
+        d1 -> d2 -> d3;
+    }
+	{
+        rank=same;
+        y1 -> y2;
+    }
+
 }
