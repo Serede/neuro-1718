@@ -19,3 +19,4 @@ ada_help:
 
 ada_exec:
 	python ada.py -t 10 -l 0.25 -e 1000 mode2 -d data/problema_real1.txt
+
