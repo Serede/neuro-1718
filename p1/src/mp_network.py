@@ -48,8 +48,9 @@ class MPNetwork(Network):
 
     def think(self):
         syn = {k: deepcopy(v) for k, v in self.synapses.items()}
+
         for target in self.synapses.keys():
-            target.f(sum([s.weight * s.origin.value for s in syn[target]]))
+            target.f(sum([s.weight * s.origin.value_next for s in syn[target]]))
 
     def run(self, datain, verbose=False):
         dataout = []

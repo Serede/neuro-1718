@@ -24,11 +24,11 @@ def main():
         '-v', '--verbose', help='Display steps', action='store_true')
     args = vars(parser.parse_args())
 
-    inputNeurons = [MPNeuron('input%d' % i, 1) for i in range(3)]
-    memoryNeurons = [MPNeuron('memory%d' % i, 2) for i in range(3)]
-    detectUpNeurons = [MPNeuron('detectUp%d' % i, 2) for i in range(3)]
-    detectDownNeurons = [MPNeuron('detectDown%d' % i, 2) for i in range(3)]
-    outputNeurons = [MPNeuron('output%d' % i, 2) for i in range(2)]
+    inputNeurons = [MPNeuron('input%d' % i, theta=1, input=True) for i in range(3)]
+    memoryNeurons = [MPNeuron('memory%d' % i, theta=2) for i in range(3)]
+    detectUpNeurons = [MPNeuron('detectUp%d' % i, theta=2) for i in range(3)]
+    detectDownNeurons = [MPNeuron('detectDown%d' % i, theta=2) for i in range(3)]
+    outputNeurons = [MPNeuron('output%d' % i, theta=2) for i in range(2)]
 
     inputLayer = Layer('Input', inputNeurons)
 

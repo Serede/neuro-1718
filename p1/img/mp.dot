@@ -1,8 +1,6 @@
 digraph MP {
-	graph [nodesep="0.1"];
+	graph [nodesep="0.25"];
 	rankdir=LR;
-	//splines=false;
-	//concentrate=true;
 	ranksep = 2.0;
 
 	{
@@ -16,37 +14,37 @@ digraph MP {
 	m1 [label=<m<SUB>1</SUB>>];
 	m2 [label=<m<SUB>2</SUB>>];
 	m3 [label=<m<SUB>3</SUB>>];
-	u1 [label=<u<SUB>1</SUB>>];
-	u2 [label=<u<SUB>2</SUB>>];
-	u3 [label=<u<SUB>3</SUB>>];
-	d1 [label=<d<SUB>1</SUB>>];
-	d2 [label=<d<SUB>2</SUB>>];
-	d3 [label=<d<SUB>3</SUB>>];
-	y1 [label=<y<SUB>1</SUB>>];
-	y2 [label=<y<SUB>2</SUB>>];
+	l1 [label=<l<SUB>1</SUB>>];
+	l2 [label=<l<SUB>2</SUB>>];
+	l3 [label=<l<SUB>3</SUB>>];
+	r1 [label=<r<SUB>1</SUB>>];
+	r2 [label=<r<SUB>2</SUB>>];
+	r3 [label=<r<SUB>3</SUB>>];
+	z1 [label=<z<SUB>1</SUB>>];
+	z2 [label=<z<SUB>2</SUB>>];
 
 
-    x1 -> d1 [label=1];
+    x1 -> r1 [label=1];
     x1 -> m1 [label=2];
-    x1 -> u1 [label=1];
-    x2 -> d2 [label=1];
+    x1 -> l1 [label=1];
+    x2 -> r2 [label=1];
     x2 -> m2 [label=2];
-    x2 -> u2 [label=1];
-    x3 -> d3 [label=1];
+    x2 -> l2 [label=1];
+    x3 -> r3 [label=1];
     x3 -> m3 [label=2];
-    x3 -> u3 [label=1];
-    m1 -> d2 [label=1];
-    m1 -> u3 [label=1];
-    m2 -> d3 [label=1];
-    m2 -> u1 [label=1];
-    m3 -> d1 [label=1];
-    m3 -> u2 [label=1];
-    u1 -> y1 [label=2];
-    u2 -> y1 [label=2];
-    u3 -> y1 [label=2];
-    d1 -> y2 [label=2];
-    d2 -> y2 [label=2];
-    d3 -> y2 [label=2];
+    x3 -> l3 [label=1];
+    m1 -> r2 [label=1];
+    m1 -> l3 [label=1];
+    m2 -> r3 [label=1];
+    m2 -> l1 [label=1];
+    m3 -> r1 [label=1];
+    m3 -> l2 [label=1];
+    l1 -> z1 [label=2];
+    l2 -> z1 [label=2];
+    l3 -> z1 [label=2];
+    r1 -> z2 [label=2];
+    r2 -> z2 [label=2];
+    r3 -> z2 [label=2];
 
 	edge[style=invis];
 	{
@@ -59,15 +57,15 @@ digraph MP {
     }
 	{
         rank=same;
-        u1 -> u2 -> u3;
+        l1 -> l2 -> l3;
     }
 	{
         rank=same;
-        d1 -> d2 -> d3;
+        r1 -> r2 -> r3;
     }
 	{
         rank=same;
-        y1 -> y2;
+        z1 -> z2;
     }
 
 }
