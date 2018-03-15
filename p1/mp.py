@@ -25,10 +25,10 @@ def main():
     args = vars(parser.parse_args())
 
     inputNeurons = [MPNeuron('input%d' % i, 1) for i in range(3)]
-    memoryNeurons = [MPNeuron('memory%d' % i, 1) for i in range(3)]
+    memoryNeurons = [MPNeuron('memory%d' % i, 2) for i in range(3)]
     detectUpNeurons = [MPNeuron('detectUp%d' % i, 2) for i in range(3)]
     detectDownNeurons = [MPNeuron('detectDown%d' % i, 2) for i in range(3)]
-    outputNeurons = [MPNeuron('output%d' % i, 1) for i in range(2)]
+    outputNeurons = [MPNeuron('output%d' % i, 2) for i in range(2)]
 
     inputLayer = Layer('Input', inputNeurons)
 
@@ -39,7 +39,7 @@ def main():
     hiddenLayers = [memoryLayer, detectLayer]
 
     memorySynapses = [
-        Synapse(inputNeurons[i], memoryNeurons[i], 1) for i in range(3)]
+        Synapse(inputNeurons[i], memoryNeurons[i], 2) for i in range(3)]
     inputUpSynapses = [
         Synapse(inputNeurons[i], detectUpNeurons[i], 1) for i in range(3)]
     inputDownSynapses = [
@@ -49,9 +49,9 @@ def main():
     memoryDownSynapses = [
         Synapse(memoryNeurons[(i-1) % 3], detectDownNeurons[i], 1) for i in range(3)]
     outputUpSynapses = [
-        Synapse(detectUpNeurons[i], outputNeurons[0], 1) for i in range(3)]
+        Synapse(detectUpNeurons[i], outputNeurons[0], 2) for i in range(3)]
     outputDownSynapses = [
-        Synapse(detectDownNeurons[i], outputNeurons[1], 1) for i in range(3)]
+        Synapse(detectDownNeurons[i], outputNeurons[1], 2) for i in range(3)]
 
     synapses = memorySynapses + inputUpSynapses + inputDownSynapses + \
         memoryUpSynapses + memoryDownSynapses + outputUpSynapses + outputDownSynapses
