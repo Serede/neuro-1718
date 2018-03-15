@@ -63,10 +63,11 @@ class PerNetwork(Network):
 
         # When during a epoch at least one instance updates weights:
         while updated and epoch < max_epoch:
+            if verbose:
+                print('Epoch ')
             updated = False
             for input, output in zip(datain, dataout_polar):
                 row_updated = self.train_i_p(input, output, verbose=verbose)
-
                 updated = updated or row_updated
 
             epoch += 1

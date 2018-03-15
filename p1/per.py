@@ -40,10 +40,8 @@ def main():
     threshold = float(args['threshold'])
     learn = float(args['learn'])
 
-    print("\n\n", "* " * 10)
     if args['mode'] == 'mode1':
-        shape, train_data, test_data = mode1(
-            args['data'], float(args['ratio']))
+        shape, train_data, test_data = mode1(args['data'], args['ratio'])
 
     elif args['mode'] == 'mode2':
         shape, train_data, test_data = mode2(args['data'])

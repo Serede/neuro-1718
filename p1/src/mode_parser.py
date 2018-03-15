@@ -39,25 +39,34 @@ def build_mode3_parser(subparsers):
 
 
 def mode1(data_file, ratio):
+    print('RUNNING IN MODE 1')
+
     # Load the dataset
     ds = Dataset(data_file)
     shape = ds.input_length, ds.output_length
-    train_data, test_data = ds.partition(ratio)
+    train_data, test_data = ds.partition(float(ratio))
+    print('Train instances: {}'.format(len(train_data[0])))
+    print('Test instances: {}'.format(len(test_data[0])))
 
     return shape, train_data, test_data
 
 
 def mode2(data_file):
+    print('RUNNING IN MODE 2')
+
     # Load the dataset
     ds = Dataset(data_file)
     shape = ds.input_length, ds.output_length
     train_data = ds.input_data, ds.output_data
     test_data = ds.input_data, ds.output_data
+    print('Train instances: {}'.format(len(train_data[0])))
+    print('Test instances: {}'.format(len(test_data[0])))
 
     return shape, train_data, test_data
 
 
 def mode3(train_file, test_file):
+    print('RUNNING IN MODE 3')
 
     # Load train dataset
     ds_train = Dataset(train_file)
@@ -67,5 +76,8 @@ def mode3(train_file, test_file):
     # Load test dataset
     ds_test = Dataset(test_file)
     test_data = ds_test.input_data, ds_test.output_data
+
+    print('Train instances: {}'.format(len(train_data[0])))
+    print('Test instances: {}'.format(len(test_data[0])))
 
     return shape, train_data, test_data
