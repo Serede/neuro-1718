@@ -1,0 +1,26 @@
+digraph mcculloch_pitts {
+	rankdir=LR;
+	//splines=false;
+	//concentrate=true;
+	ranksep = 2.0;
+
+	node [shape = circle];
+
+
+	subgraph X1 {
+		x_i [label = <x<SUB>i</SUB>>];
+		m_i [label = <m<SUB>i-1</SUB>>];
+		m [label = <m<SUB>i</SUB>>];
+
+		x_i -> 	m [ label = 2, weight=1]
+	}
+	
+
+	subgraph L {
+		l_i [label = <l<SUB>i</SUB>>]
+
+		x_i -> l_i [ label = 1, weight=1 ]
+
+		m_i -> l_i [ label = 1, weight=1 ]
+	}
+}
