@@ -59,6 +59,13 @@ def main():
     print("Test score:", network.score(
         test_data[_in_], test_data[_out_]))
 
+    if args['mode'] == 'mode3':
+        res = network.classify(test_data[_in_])
+        with open(args['output'], 'w') as fileout:
+            for line in res:
+                fileout.write('{}\n'.format(' '.join([str(x) for x in line])))
+
+
 
 if __name__ == "__main__":
     main()

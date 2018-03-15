@@ -36,6 +36,8 @@ def build_mode3_parser(subparsers):
         '-tr', '--train', help='Train dataset file', required=True)
     parser.add_argument(
         '-te', '--test', help='Test dataset file', required=True)
+    parser.add_argument(
+        '-o', '--output', help='Output file for predictions', required=True)
 
 
 def mode1(data_file, ratio):

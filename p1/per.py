@@ -24,8 +24,6 @@ def build_parser():
         '-l', '--learn', help='Learning rate', required=True)
     parser.add_argument(
         '-e', '--epoch', help='Maximum number of epochs to train', required=True)
-    parser.add_argument(
-        '-v', '--verbose', help='Display steps', action='store_true')
 
     return parser
 
@@ -53,12 +51,19 @@ def main():
                          theta=threshold, learn_rate=learn)
     print(network)
 
-    network.train(train_data[_in_], train_data[_out_], max_epoch=epoch, verbose=args['verbose'])
+    network.train(train_data[_in_], train_data[_out_], max_epoch=epoch)
 
     print("Train score:", network.score(
         train_data[_in_], train_data[_out_]))
     print("Test score:", network.score(
         test_data[_in_], test_data[_out_]))
+
+    if args['mode'] == 'mode3':
+        res = network.classify(test_data[_in_])
+        with open(args['output'], 'w') as fileout:
+            for line in res:
+                fileout.write('{}\n'.format(' '.join([str(x) for x in line])))
+
 
 
 if __name__ == "__main__":
