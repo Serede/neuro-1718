@@ -1,0 +1,77 @@
+digraph MP {
+    layout=neato;
+    rankdir=LR;
+    #overlap = false;
+    #splines = true;
+
+    subgraph x {
+        color=blue;
+        node [style=solid,color=seagreen2, shape=circle];
+        x1 [label=<x<SUB>1</SUB>>, pos="0,75!"];
+        x2 [label=<x<SUB>2</SUB>>, pos="0,125!"];
+        x3 [label=<x<SUB>3</SUB>>, pos="0,175!"];
+        {rank=same; x1 x2 x3}
+        x1 -> x2 -> x3 [style=invis];
+    }
+
+    subgraph m {
+        color=blue;
+        node [style=solid,color=seagreen2, shape=circle];
+        m1 [label=<m<SUB>1</SUB>>, pos="100,75!"];
+        m2 [label=<m<SUB>2</SUB>>, pos="100,125!"];
+        m3 [label=<m<SUB>3</SUB>>, pos="100,175!"];
+        {rank=same; m1 m2 m3}
+        m1 -> m2 -> m3 [style=invis];
+    }
+
+    subgraph u {
+        color=blue;
+        node [style=solid,color=seagreen2, shape=circle];
+        u1 [label=<u<SUB>1</SUB>>, pos="200,0!"];
+        u2 [label=<u<SUB>2</SUB>>, pos="200,50!"];
+        u3 [label=<u<SUB>3</SUB>>, pos="200,100!"];
+        {rank=same; u1 u2 u3}
+        u1 -> u2 -> u3 [style=invis];
+    }
+
+    subgraph d {
+        color=blue;
+        node [style=solid,color=seagreen2, shape=circle];
+        d1 [label=<d<SUB>1</SUB>>, pos="200,150!"];
+        d2 [label=<d<SUB>2</SUB>>, pos="200,200!"];
+        d3 [label=<d<SUB>3</SUB>>, pos="200,250!"];
+        {rank=same; d1 d2 d3}
+        d1 -> d2 -> d3 [style=invis];
+    }
+
+    subgraph y {
+        color=blue;
+        node [style=solid,color=seagreen2, shape=circle];
+        y1 [label=<y<SUB>1</SUB>>, pos="300,100!"];
+        y2 [label=<y<SUB>2</SUB>>, pos="300,150!"];
+        {rank=same; y1 y2}
+        y1 -> y2 [style=invis];
+    }
+
+    x1 -> d1;
+    x1 -> m1;
+    x1 -> u1;
+    x2 -> d2;
+    x2 -> m2;
+    x2 -> u2;
+    x3 -> d3;
+    x3 -> m3;
+    x3 -> u3;
+    m1 -> d2;
+    m1 -> u3;
+    m2 -> d3;
+    m2 -> u1;
+    m3 -> d1;
+    m3 -> u2;
+    u1 -> y1;
+    u2 -> y1;
+    u3 -> y1;
+    d1 -> y2;
+    d2 -> y2;
+    d3 -> y2;
+}
