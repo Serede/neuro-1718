@@ -56,30 +56,27 @@ class PerNetwork(Network):
         else:
             return polar
 
-    def train(self, datain, dataout, verbose=False, max_epoch=__default_max_epoch__):
+    def train(self, datain, dataout, max_epoch=__default_max_epoch__):
         updated = True
         epoch = 0
         dataout_polar = btp(dataout)
 
         # When during a epoch at least one instance updates weights:
         while updated and epoch < max_epoch:
-            if verbose:
-                print('Epoch ')
             updated = False
             for input, output in zip(datain, dataout_polar):
-                row_updated = self.train_i_p(input, output, verbose=verbose)
+                row_updated = self.train_i_p(input, output)
                 updated = updated or row_updated
 
             epoch += 1
 
         return
 
-    def train_i_p(self, datain, dataout_polar, verbose=False):
+    def train_i_p(self, datain, dataout_polar):
         """
         Expects the output in polar
         :param datain:
         :param dataout_polar:
-        :param verbose:
         :return:
         """
         y = self.classify_i_p(datain)
@@ -105,5 +102,5 @@ class PerNetwork(Network):
         score = (dataout_binary == res).sum() / dataout_binary.size
         return score
 
-    def run(self, datain, binary_output=True, verbose=False):
+    def run(self, datain, binary_output=True):
         return self.classify(datain, binary_output)

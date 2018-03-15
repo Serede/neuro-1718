@@ -24,8 +24,6 @@ def build_parser():
         '-l', '--learn', help='Learning rate', required=True)
     parser.add_argument(
         '-e', '--epoch', help='Maximum number of epochs to train', required=True)
-    parser.add_argument(
-        '-v', '--verbose', help='Display steps', action='store_true')
 
     return parser
 
@@ -55,7 +53,11 @@ def main():
 
     network.train(train_data[_in_], train_data[_out_],
                   max_epoch=epoch, threshold=threshold)
-    network.run(test_data[_in_])
+
+    print("Train score:", network.score(
+        train_data[_in_], train_data[_out_]))
+    print("Test score:", network.score(
+        test_data[_in_], test_data[_out_]))
 
 
 if __name__ == "__main__":

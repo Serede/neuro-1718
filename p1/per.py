@@ -53,7 +53,7 @@ def main():
                          theta=threshold, learn_rate=learn)
     print(network)
 
-    network.train(train_data[_in_], train_data[_out_], max_epoch=epoch)
+    network.train(train_data[_in_], train_data[_out_], max_epoch=epoch, verbose=args['verbose'])
 
     print("Train score:", network.score(
         train_data[_in_], train_data[_out_]))

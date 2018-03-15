@@ -35,7 +35,6 @@ class AdaNetwork(Network):
         delta = np.inf
 
         while threshold < delta and epochs < max_epoch:
-            print("Weight variation:", delta)
             delta = self.train_all_instances(datain, dataout_polar)
             epochs += 1
 
@@ -48,8 +47,6 @@ class AdaNetwork(Network):
         for input_i, output_i in zip(input_polar, output_polar):
             delta = max(delta, self.train_i(input_i, output_i))
 
-        print('SCORE: ', self.score(input_polar, output_polar))
-
         return delta
 
     def train_i(self, input_i, output_i):
@@ -58,16 +55,6 @@ class AdaNetwork(Network):
 
         delta_w = self.learn_rate * np.dot((output_i - y_in).reshape((self.output_size, 1)),
                                            input_i.reshape((1, self.input_size)))
-        # print("*"*20)
-        # print("t:",output_i)
-        # print("y:",y)
-        # print("t-y:",(output_i - y))
-        # print("t-y:",(output_i - y).reshape((self.output_size, 1)))
-        # print("x:",input_i)
-        # print("x:",input_i.reshape((1, -1)))
-        # print("(t-y)x:",np.dot((output_i - y).reshape((self.output_size, 1)), input_i.reshape((1, -1))))
-        # print("a(t-y)x:",delta_w)
-        # print(">"*20)
 
         delta_b = self.learn_rate * (output_i - y_in)
 
@@ -110,5 +97,5 @@ class AdaNetwork(Network):
 
         return score
 
-    def run(self, datain, binary_output=True, verbose=False):
+    def run(self, datain, binary_output=True):
         return self.classify(datain, binary_output)
