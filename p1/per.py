@@ -61,9 +61,11 @@ def main():
     if args['mode'] == 'mode3':
         res = network.classify(test_data[_in_])
         with open(args['output'], 'w') as fileout:
-            for line in res:
-                fileout.write('{}\n'.format(' '.join([str(x) for x in line])))
-
+            fileout.write('{}\n'.format(' '.join([str(s) for s in shape])))
+            for i in range(len(res)):
+                x = ' '.join([str(x) for x in test_data[_in_][i]])
+                y = ' '.join([str(y) for y in res[i]])
+                fileout.write('{} {}\n'.format(x, y))
 
 
 if __name__ == "__main__":

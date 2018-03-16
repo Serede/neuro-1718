@@ -13,7 +13,7 @@ class Dataset:
     input_data = None
     output_data = None
 
-    def __init__(self, filename, normalize=True, binary=True):
+    def __init__(self, filename, normalize=False, binary=True):
         with open(filename, 'r') as file:
             # Load metadata
             [len_in, len_out] = file.readline().split()
