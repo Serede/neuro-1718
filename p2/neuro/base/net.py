@@ -153,8 +153,17 @@ class Net(ABC):
                 instance, len(self._x)))
         # Create dict with input values from instance
         x = {name: value for name, value in zip(self._x, instance)}
-        # Depth First Search
+
         def dfs(a):
+            """Internal implementation of Depth First Search for cells.
+
+            Args:
+                a (str): Cell name.
+
+            Returns:
+                int: Final cell output.
+            """
+
             # Degenerate case
             if not a:
                 return 0
@@ -168,6 +177,7 @@ class Net(ABC):
             s = sum([w * dfs(b) for b, w in self._synapses[a].items()])
             # Return result of transfer function
             return self.f(b + s)
+
         # Return output layer values after DFS
         return [dfs(y) for y in self._y]
 

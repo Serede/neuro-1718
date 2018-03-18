@@ -1,5 +1,7 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Simple test of logic functions using monolayer perceptrons.
+"""
 
 from neuro.perceptron import Perceptron
 from pprint import pprint
