@@ -3,7 +3,6 @@
 """Base neural network module.
 
 Todo:
-    * Add bias-related logic.
     * Tackle binary/polar schizophrenia.
     * Add method for confusion matrix.
     * Implement __str__.
@@ -26,7 +25,7 @@ class Net(ABC):
     _y = None
     _synapses = None
 
-    def __init__(self, name, layers, f):
+    def __init__(self, name):
         self.name = name
         self._x = list()
         self._y = list()
@@ -48,15 +47,20 @@ class Net(ABC):
             ValueError: If `name` or `type` are invalid.
         """
 
+        # Check if cell already exists
         if name in self._synapses:
             raise ValueError(
                 'Cell "{}" already exists in net "{}".'.format(name, self.name))
+        # Initialize cell synapses dict
         self._synapses[name] = dict()
+        # Initialize bias to 0 (use special key None for bias)
+        self._synapses[name][None] = 0
+        # Mark as input or output cell, if any
         if type == 'in':
             self._x.append(name)
         elif type == 'out':
             self._y.append(name)
-        else:
+        elif type:
             raise ValueError('Invalid cell type "{}".'.format(type))
 
     def add_cells(self, name, n, type=None):
@@ -70,9 +74,13 @@ class Net(ABC):
         Raises:
             ValueError: If `name` or `type` are invalid.
         """
-
         for i in range(n):
-            self.add_cell('{}{}'.format(name, i), type=type)
+            # If more than one use base name
+            if n > 1:
+                self.add_cell('{}{}'.format(name, i), type=type)
+            # Else use whole name
+            else:
+                self.add_cell(name, type=type)
 
     def add_synapse(self, pre, post, weight):
         """Add a synapse between two cells in the net.
@@ -86,13 +94,15 @@ class Net(ABC):
             LookupError: If `pre` or `post` are invalid.
         """
 
+        # Check that cells exist
         if not pre in self._synapses:
             raise LookupError(
                 'Cell "{}" does not exist in the net.'.format(pre))
         if not post in self._synapses:
             raise LookupError(
                 'Cell "{}" does not exist in the net.'.format(post))
-        self._synapses[pre][post] = weight
+        # Add synapse to dict
+        self._synapses[post][pre] = weight
 
     def add_synapses(self, pre, post, weight, n=1, m=1):
         """Bulk adds synapses between two sets of cells in the net.
@@ -110,12 +120,16 @@ class Net(ABC):
 
         for i in range(n):
             for j in range(m):
+                # If more than one use base name
                 if n > 1:
                     _pre = '{}{}'.format(pre, i)
+                # Else use whole name
                 else:
                     _pre = pre
+                # If more than one use base name
                 if m > 1:
                     _post = '{}{}'.format(post, j)
+                # Else use whole name
                 else:
                     _post = post
                 self.add_synapse(_pre, _post, weight)
@@ -133,29 +147,29 @@ class Net(ABC):
             list: Ordered list of values from output layer.
         """
 
+        # Check that input sizes match
         if len(instance) != len(self._x):
             raise ValueError('Instance {} does not match input layer size ({}).'.format(
                 instance, len(self._x)))
-        # Create dict for storing cell values
-        v = dict()
-        # Set input layer values from instance
-        v.update({name: value for name, value in zip(self._x, instance)})
-        # Set initial output layer values to zero
-        v.update({name: 0 for name in self._y})
-        # Initialize synaptic queue with input cells
-        q = self._x
-        # Process synaptic queue until empty
-        while q:
-            # Get first cell in queue
-            pre = q.pop(0)
-            # For each outgoing synapse
-            for post, weight in self._synapses[pre].items():
-                # Update post-synaptic cell value
-                v[post] = self.f(weight * v[pre])
-                # Append post-synaptic cell to queue
-                q.append(post)
-        # Return output layer values
-        return [v[y] for y in self._y]
+        # Create dict with input values from instance
+        x = {name: value for name, value in zip(self._x, instance)}
+        # Depth First Search
+        def dfs(a):
+            # Degenerate case
+            if not a:
+                return 0
+            # If input cell
+            if a in self._x:
+                # Return input value from instance
+                return x[a]
+            # Get bias
+            b = self._synapses[a][None]
+            # Weighted sum of ingoing synapses
+            s = sum([w * dfs(b) for b, w in self._synapses[a].items()])
+            # Return result of transfer function
+            return self.f(b + s)
+        # Return output layer values after DFS
+        return [dfs(y) for y in self._y]
 
     def test(self, data):
         """Run the net for an ordered list of instances.
@@ -186,20 +200,25 @@ class Net(ABC):
             float: Ratio of sucessfully tested data.
         """
 
+        # Check that data sizes match
         if len(datain) != len(dataout):
             raise ValueError('Input and output instance counts do not match.')
+        # Run test for input data
         results = self.test(datain)
+        # Get number of instances
         n = len(results)
+        # Return success ratio
         return sum([1 for i in range(n) if results[i] == dataout[i]]) / n
 
     @abstractmethod
-    def train(self, datain, dataout, learn):
+    def train(self, datain, dataout, learn, epochs):
         """Adjust net weights from training data.
 
         Args:
             datain (list): Ordered list of input instances to train.
             dataout (list): Ordered list of expected output instances.
             learn (float): Learning rate to use during training.
+            epochs (int): Maximum number of epochs to train.
 
         Raises:
             ValueError: If `datain` or `dataout` are invalid.

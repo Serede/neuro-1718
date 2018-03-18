@@ -5,3 +5,4 @@ p2
    :maxdepth: 4
 
    neuro
+   test
