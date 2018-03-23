@@ -3,8 +3,8 @@
 """Monolayer Perceptron implementation.
 """
 
-from neuro.base.net import Net
 from doc_inherit import method_doc_inherit
+from neuro.base.net import Net
 
 
 class Perceptron(Net):

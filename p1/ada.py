@@ -69,6 +69,5 @@ def main():
                 fileout.write('{} {}\n'.format(x, y))
 
 
-
 if __name__ == "__main__":
     main()

@@ -45,16 +45,16 @@ def main():
     inputDownSynapses = [
         Synapse(inputNeurons[i], detectDownNeurons[i], 1) for i in range(3)]
     memoryUpSynapses = [
-        Synapse(memoryNeurons[(i+1) % 3], detectUpNeurons[i], 1) for i in range(3)]
+        Synapse(memoryNeurons[(i + 1) % 3], detectUpNeurons[i], 1) for i in range(3)]
     memoryDownSynapses = [
-        Synapse(memoryNeurons[(i-1) % 3], detectDownNeurons[i], 1) for i in range(3)]
+        Synapse(memoryNeurons[(i - 1) % 3], detectDownNeurons[i], 1) for i in range(3)]
     outputUpSynapses = [
         Synapse(detectUpNeurons[i], outputNeurons[0], 2) for i in range(3)]
     outputDownSynapses = [
         Synapse(detectDownNeurons[i], outputNeurons[1], 2) for i in range(3)]
 
     synapses = memorySynapses + inputUpSynapses + inputDownSynapses + \
-        memoryUpSynapses + memoryDownSynapses + outputUpSynapses + outputDownSynapses
+               memoryUpSynapses + memoryDownSynapses + outputUpSynapses + outputDownSynapses
 
     network = MPNetwork(
         'MPNetwork', inputLayer, outputLayer, hiddenLayers, synapses)

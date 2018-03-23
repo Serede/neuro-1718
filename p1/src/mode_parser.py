@@ -3,6 +3,7 @@
 
 from src.dataset import Dataset
 
+
 def build_mode_subparser(parser):
     subparsers = parser.add_subparsers(dest='mode', help='Working mode')
 

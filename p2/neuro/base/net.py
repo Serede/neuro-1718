@@ -11,6 +11,9 @@ Todo:
 
 from abc import ABC, abstractmethod
 
+# Use special key None for bias)
+_bias_ = None
+
 
 class Net(ABC):
     """Base neural network class.
@@ -53,8 +56,8 @@ class Net(ABC):
                 'Cell "{}" already exists in net "{}".'.format(name, self.name))
         # Initialize cell synapses dict
         self._synapses[name] = dict()
-        # Initialize bias to 0 (use special key None for bias)
-        self._synapses[name][None] = 0
+        # Initialize bias to 0
+        self._synapses[name][_bias_] = 0
         # Mark as input or output cell, if any
         if type == 'in':
             self._x.append(name)

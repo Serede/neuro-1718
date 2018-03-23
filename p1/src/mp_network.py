@@ -57,7 +57,7 @@ class MPNetwork(Network):
         self.feel(datain[0])
         for i in range(1, len(datain) + len(self.hidden_layers)):
             self.think()
-            if(i < len(datain)):
+            if (i < len(datain)):
                 self.feel(datain[i])
             else:
                 self.feel([0] * len(self.input_layer))
