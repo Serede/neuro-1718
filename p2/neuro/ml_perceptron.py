@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Monolayer Perceptron implementation.
+"""Multilayer Perceptron implementation.
 """
 
 from doc_inherit import method_doc_inherit
@@ -8,36 +8,52 @@ from doc_inherit import method_doc_inherit
 from neuro.base.net import Net
 
 
-class Perceptron(Net):
-    """Monolayer Perceptron class.
+class MLPerceptron(Net):
+    """Multilayer Perceptron class.
 
     Attributes:
         name (str): Perceptron instance name.
         sizein (int): Input layer size.
         sizeout (int): Output layer size.
+        hsizes (tuple): Hidden layers sizes.
         theta (float): Activation threshold.
     """
 
     name = None
     sizein = None
     sizeout = None
+    hsizes = None
     theta = None
 
-    def __init__(self, name, sizein, sizeout, theta):
+    def __init__(self, name, sizein, sizeout, hsizes, theta):
+        if not hsizes:
+            raise ValueError('Invalid hidden layers hsizes.')
         super().__init__(name)
         self.sizein = sizein
         self.sizeout = sizeout
+        self.hsizes = hsizes
         self.theta = theta
+        names = []
+        # For each hidden layer
+        for i in range(len(hsizes)):
+            names.append('z' * (i + 1))
+            # Add hidden cells
+            self.add_cells(names[i], hsizes[i])
+            # Add synapses with previous hidden layer
+            if i > 0:
+                self.add_synapses(names[i-1], names[i], 0, n=hsizes[i-1], m=hsizes[i])
         # Add input layer cells
         self.add_cells('x', sizein, type='in')
         # Add output layer cells
         self.add_cells('y', sizeout, type='out')
-        # Add synapses
-        self.add_synapses('x', 'y', 0, n=sizein, m=sizeout)
+        # Add input synapses
+        self.add_synapses('x', names[0], 0, n=sizein, m=hsizes[0])
+        # Add output synapses
+        self.add_synapses(names[i], 'y', 0, n=hsizes[i], m=sizeout)
 
     @method_doc_inherit
     def train(self, datain, dataout, learn, epochs):
-        # Check that data sizes match
+        # Check that data hsizes match
         if len(datain) != len(dataout):
             raise ValueError('Input and output instance counts do not match.')
         # Check learning rate range
@@ -56,7 +72,7 @@ class Perceptron(Net):
             for s, t in zip(datain, dataout):
                 # Run test for input data
                 y = self.test_instance(s)
-                # Check that input sizes match
+                # Check that input hsizes match
                 if len(y) != len(t):
                     raise ValueError(
                         'Instance {} does not match output layer size ({}).'.format(t, len(y)))
