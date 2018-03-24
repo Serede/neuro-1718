@@ -56,7 +56,7 @@ class Perceptron(Net):
             for s, t in zip(datain, dataout):
                 # Run test for input data
                 y = self.test_instance(s)
-                # Check that input sizes match
+                # Check that output sizes match
                 if len(y) != len(t):
                     raise ValueError(
                         'Instance {} does not match output layer size ({}).'.format(t, len(y)))

@@ -39,6 +39,41 @@ class Net(ABC):
 
     __repr__ = __str__
 
+    def _dfs(self, a, instance):
+        """Internal implementation of Depth First Search for cell transfers.
+
+        Args:
+            a (str): Final cell name.
+            instance (list): Ordered list of values for input layer.
+
+        Raises:
+            ValueError: If `instance` is invalid.
+
+        Returns:
+            int: Final cell pre-transfer output value.
+        """
+
+        # Check that input sizes match
+        if len(instance) != len(self._x):
+            raise ValueError('Instance {} does not match input layer size ({}).'.format(
+                instance, len(self._x)))
+        # Create dict with input values from instance
+        x = {name: value for name, value in zip(self._x, instance)}
+        # Degenerate case
+        if not a:
+            return 0
+        # If input cell
+        if a in self._x:
+            # Return input value from instance
+            return x[a]
+        # Get bias
+        b = self._synapses[a][None]
+        # Weighted sum of ingoing synapses
+        s = sum([w * self.f(self._dfs(b, instance))
+                 for b, w in self._synapses[a].items()])
+        # Return pre-transfer output value
+        return b + s
+
     def add_cell(self, name, type=None):
         """Add a new cell to the net.
 
@@ -150,39 +185,8 @@ class Net(ABC):
             list: Ordered list of values from output layer.
         """
 
-        # Check that input sizes match
-        if len(instance) != len(self._x):
-            raise ValueError('Instance {} does not match input layer size ({}).'.format(
-                instance, len(self._x)))
-        # Create dict with input values from instance
-        x = {name: value for name, value in zip(self._x, instance)}
-
-        def dfs(a):
-            """Internal implementation of Depth First Search for cells.
-
-            Args:
-                a (str): Cell name.
-
-            Returns:
-                int: Final cell output.
-            """
-
-            # Degenerate case
-            if not a:
-                return 0
-            # If input cell
-            if a in self._x:
-                # Return input value from instance
-                return x[a]
-            # Get bias
-            b = self._synapses[a][None]
-            # Weighted sum of ingoing synapses
-            s = sum([w * dfs(b) for b, w in self._synapses[a].items()])
-            # Return result of transfer function
-            return self.f(b + s)
-
         # Return output layer values after DFS
-        return [dfs(y) for y in self._y]
+        return [self.f(self._dfs(y, instance)) for y in self._y]
 
     def test(self, data):
         """Run the net for an ordered list of instances.
