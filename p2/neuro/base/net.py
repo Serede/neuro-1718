@@ -236,6 +236,7 @@ class Net(ABC):
         Raises:
             ValueError: If `datain` or `dataout` are invalid.
         """
+
         pass
 
     @abstractmethod
@@ -246,7 +247,7 @@ class Net(ABC):
             y (float): Input signal.
 
         Returns:
-            int: Output.
+            float: Output.
         """
 
         pass

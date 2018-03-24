@@ -3,6 +3,7 @@
 """Multilayer Perceptron implementation.
 """
 
+import math
 from doc_inherit import method_doc_inherit
 
 from neuro.base.net import Net
@@ -41,7 +42,8 @@ class MLPerceptron(Net):
             self.add_cells(names[i], hsizes[i])
             # Add synapses with previous hidden layer
             if i > 0:
-                self.add_synapses(names[i-1], names[i], 0, n=hsizes[i-1], m=hsizes[i])
+                self.add_synapses(names[i-1], names[i],
+                                  0, n=hsizes[i-1], m=hsizes[i])
         # Add input layer cells
         self.add_cells('x', sizein, type='in')
         # Add output layer cells
@@ -95,8 +97,16 @@ class MLPerceptron(Net):
 
     @method_doc_inherit
     def f(self, y):
-        if y < -self.theta:
-            return -1
-        if y > self.theta:
-            return 1
-        return 0
+        return 2 / (1 + math.exp(-y)) - 1
+
+    def df(self, y):
+        """Net-wide transfer function derivative.
+
+        Args:
+            y (float): Input signal.
+
+        Returns:
+            float: Output.
+        """
+
+        return (1 + self.f(y)) * (1 - self.f(y)) / 2
