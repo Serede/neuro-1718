@@ -78,28 +78,24 @@ class MLPerceptron(Net):
                     raise ValueError(
                         'Instance {} does not match output layer size ({}).'.format(t, len(self._y)))
                 # Create dict for new synapses
-                new_synapses = {a: {b: w for b, w in d}
-                                for a, d in self._synapses}
-                # Run test for input data
-                y = self.test_instance(s)
-                # For each output value obtained
-                for j in range(len(y)):
-                    # If different from expected value
-                    if y[j] != t[j]:
-                        _y = self._y[j]
-                        # Obtain input value for y
-                        y_in = self._dfs(_y, s)
-                        # Compute delta
-                        δ = (t[j] - y[j]) * self.df(y_in)
-                        # Update bias weight
-                        new_synapses[_y][None] += learn * δ
-                        # For each input value
-                        for i in range(len(s)):
-                            _x = self._x[i]
-                            # Update synaptic weight
-                            new_synapses[_y][_x] += learn * t[j] * s[i]
-                        # Clear stop condition
-                        stop = False
+                synapses = {a: {b: w for b, w in d}
+                            for a, d in self._synapses}
+                # Create history dict
+                hist = dict()
+                # Populate history dict and get output values
+                y = self.test_instance(s, hist=hist)
+                # Initialize list of input deltas
+                δ_in = [t[k] - y[k] for k in range(len(y))]
+                # Create lists for retropropagation
+                names = ['x'] + self._hnames + ['y']
+                sizes = [self.sizein] + self.hsizes + [self.sizeout]
+                # Retropropagation
+                for name, size in zip(names, sizes):
+                    #
+                    # WIP HERE
+                    #
+                    pass
+
             # Move to next epoch
             epoch += 1
 

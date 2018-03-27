@@ -54,12 +54,12 @@ class Perceptron(Net):
             stop = True
             # For each training pair in data
             for s, t in zip(datain, dataout):
+                # Check that output sizes match
+                if len(self._y) != len(t):
+                    raise ValueError(
+                        'Instance {} does not match output layer size ({}).'.format(t, len(self._y)))
                 # Run test for input data
                 y = self.test_instance(s)
-                # Check that output sizes match
-                if len(y) != len(t):
-                    raise ValueError(
-                        'Instance {} does not match output layer size ({}).'.format(t, len(y)))
                 # For each output value obtained
                 for j in range(len(y)):
                     # If different from expected value

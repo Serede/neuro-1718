@@ -39,18 +39,19 @@ class Net(ABC):
 
     __repr__ = __str__
 
-    def _dfs(self, a, instance):
+    def _dfs(self, c, instance, hist=dict()):
         """Internal implementation of Depth First Search for cell transfers.
 
         Args:
-            a (str): Final cell name.
+            c (str): Final cell name.
             instance (list): Ordered list of values for input layer.
+            hist (dict, optional): Defaults to {}. Value history.
 
         Raises:
             ValueError: If `instance` is invalid.
 
         Returns:
-            int: Final cell pre-transfer output value.
+            int: Final cell output value.
         """
 
         # Check that input sizes match
@@ -60,19 +61,23 @@ class Net(ABC):
         # Create dict with input values from instance
         x = {name: value for name, value in zip(self._x, instance)}
         # Degenerate case
-        if not a:
+        if not c:
             return 0
         # If input cell
-        if a in self._x:
+        if c in self._x:
+            # Add values to history
+            hist[c] = [x[c], x[c]]
             # Return input value from instance
-            return x[a]
+            return x[c]
         # Get bias
-        b = self._synapses[a][None]
+        b = self._synapses[c][None]
         # Weighted sum of ingoing synapses
-        s = sum([w * self.f(self._dfs(b, instance))
-                 for b, w in self._synapses[a].items()])
-        # Return pre-transfer output value
-        return b + s
+        s = sum([w * self._dfs(d, instance, hist=hist)
+                 for d, w in self._synapses[c].items()])
+        # Add values to history
+        hist[c] = [b + s, self.f(b + s)]
+        # Return output value
+        return self.f(b + s)
 
     def add_cell(self, name, type=None):
         """Add a new cell to the net.
@@ -172,11 +177,12 @@ class Net(ABC):
                     _post = post
                 self.add_synapse(_pre, _post, weight)
 
-    def test_instance(self, instance):
+    def test_instance(self, instance, hist=dict()):
         """Run the net with an instance as input.
 
         Args:
             instance (list): Ordered list of values for input layer.
+            hist (dict, optional): Defaults to {}. Value history.
 
         Raises:
             ValueError: If `instance` is invalid.
@@ -186,7 +192,7 @@ class Net(ABC):
         """
 
         # Return output layer values after DFS
-        return [self.f(self._dfs(y, instance)) for y in self._y]
+        return [self._dfs(y, instance, hist) for y in self._y]
 
     def test(self, data):
         """Run the net for an ordered list of instances.
