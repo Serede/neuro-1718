@@ -4,6 +4,7 @@
 """
 
 import math
+from copy import deepcopy
 from doc_inherit import method_doc_inherit
 
 from neuro.base.net import Net
@@ -16,7 +17,7 @@ class MLPerceptron(Net):
         name (str): Perceptron instance name.
         sizein (int): Input layer size.
         sizeout (int): Output layer size.
-        hsizes (tuple): Hidden layers sizes.
+        hsizes (list): Hidden layers sizes.
         theta (float): Activation threshold.
     """
 
@@ -78,24 +79,46 @@ class MLPerceptron(Net):
                     raise ValueError(
                         'Instance {} does not match output layer size ({}).'.format(t, len(self._y)))
                 # Create dict for new synapses
-                synapses = {a: {b: w for b, w in d}
-                            for a, d in self._synapses}
+                synapses = deepcopy(self._synapses)
                 # Create history dict
                 hist = dict()
                 # Populate history dict and get output values
                 y = self.test_instance(s, hist=hist)
                 # Initialize list of input deltas
-                δ_in = [t[k] - y[k] for k in range(len(y))]
+                δ_in = [t[j] - y[j] for j in range(len(y))]
                 # Create lists for retropropagation
-                names = ['x'] + self._hnames + ['y']
-                sizes = [self.sizein] + self.hsizes + [self.sizeout]
+                names = ['y'] + self._hnames[::-1] + ['x']
+                sizes = [self.sizeout] + self.hsizes[::-1] + [self.sizein]
                 # Retropropagation
-                for name, size in zip(names, sizes):
-                    #
-                    # WIP HERE
-                    #
-                    pass
-
+                for k in range(len(names) - 1):
+                    # Initialize list for previous layer δ_in
+                    _δ_in = [0] * sizes[k + 1]
+                    # For each cell in current layer
+                    for j in range(sizes[k]):
+                        # If correction is needed
+                        if δ_in[j] != 0:
+                            _zz = '{}{}'.format(names[k], j)
+                            # Get input value from history
+                            zz_in = hist[_zz][0]
+                            # Compute current delta
+                            δ = δ_in[j] * self.df(zz_in)
+                            # Save bias weight correction
+                            synapses[_zz][None] += learn * δ
+                            # For each cell in previous layer
+                            for i in range(sizes[k + 1]):
+                                _z = '{}{}'.format(names[k + 1], i)
+                                # Get output value from history
+                                z = hist[_z][1]
+                                # Save synaptic weight correction
+                                synapses[_zz][_z] += learn * δ * z
+                                # Accumulate δ_in
+                                _δ_in[i] += δ * self._synapses[_zz][_z]
+                            # Clear stop condition
+                            stop = False
+                    # Set input deltas for previous layer
+                    δ_in = _δ_in
+                # Update synapses
+                self._synapses = synapses
             # Move to next epoch
             epoch += 1
 

@@ -4,6 +4,14 @@ neuro package
 Submodules
 ----------
 
+neuro.ml\_perceptron module
+---------------------------
+
+.. automodule:: neuro.ml_perceptron
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 neuro.perceptron module
 -----------------------
 

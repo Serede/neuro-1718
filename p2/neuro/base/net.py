@@ -10,8 +10,9 @@ Todo:
 """
 
 from abc import ABC, abstractmethod
+from random import uniform
 
-# Use special key None for bias)
+# Use special key None for bias weights
 _bias_ = None
 
 
@@ -45,7 +46,7 @@ class Net(ABC):
         Args:
             c (str): Final cell name.
             instance (list): Ordered list of values for input layer.
-            hist (dict, optional): Defaults to {}. Value history.
+            hist (dict, optional): Defaults to {}. Value history [in, out].
 
         Raises:
             ValueError: If `instance` is invalid.
@@ -176,6 +177,25 @@ class Net(ABC):
                 else:
                     _post = post
                 self.add_synapse(_pre, _post, weight)
+
+    def randomize_synapses(self, low, high):
+        """Randomizes synaptic weights between given values.
+
+        Args:
+            low (float): Minimum weight value.
+            high (float): Maximum weight value.
+        """
+
+        # For each synapse in the net
+        for b, d in self._synapses.items():
+            for a in d.keys():
+                # Assume weight 0
+                w = 0
+                # Generate random non-zero weight
+                while w == 0:
+                    w = uniform(low, high)
+                # Set synaptic weight
+                self._synapses[b][a] = w
 
     def test_instance(self, instance, hist=dict()):
         """Run the net with an instance as input.
