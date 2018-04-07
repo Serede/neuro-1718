@@ -96,8 +96,8 @@ print()
 print('XOR')
 print()
 
-p = MLPerceptron('XOR', 2, 2, [2, 2], 0.5)
-p.randomize_synapses(-0.5, 0.5)
+p = MLPerceptron('XOR', 2, 2, [2], 0.5)
+p.randomize_synapses(-1, 1)
 print('Initial synapses:')
 pprint(p._synapses)
 print()
@@ -105,7 +105,7 @@ print()
 datain = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
 dataout = [[1, -1], [-1, 1], [-1, 1], [1, -1]]
 
-p.train(datain, dataout, 1, 10000)
+p.train(datain, dataout, 0.25, 10000)
 print('Final synapses:')
 pprint(p._synapses)
 print()
