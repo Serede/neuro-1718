@@ -1,19 +1,13 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Base neural network module.
-
-Todo:
-    * Tackle binary/polar schizophrenia.
-    * Add method for confusion matrix.
-    * Implement __str__.
-    * Test everything.
 """
 
 from abc import ABC, abstractmethod
 from random import uniform
 
 # Use special key None for bias weights
-_bias_ = None
+BIAS_KEY = None
 
 
 class Net(ABC):
@@ -71,26 +65,28 @@ class Net(ABC):
             # Return input value from instance
             return x[c]
         # Get bias
-        b = self._synapses[c][None]
+        b = self._synapses[c][BIAS_KEY]
         # Weighted sum of ingoing synapses
         s = sum([w * self._dfs(d, instance, hist=hist)
-                 for d, w in self._synapses[c].items()])
+                 for d, w in self._synapses[c].items() if d is not BIAS_KEY])
         # Add values to history
         hist[c] = [b + s, self.f(b + s)]
         # Return output value
         return self.f(b + s)
 
-    def add_cell(self, name, type=None):
+    def add_cell(self, basename, i, type=None):
         """Add a new cell to the net.
 
         Args:
-            name (str): Unique name for the new cell.
+            basename (str): Base name for the new cell.
+            i (int): Number to append to the base name.
             type (str, optional): Defaults to None. Cell type ('in'/'out'/None).
 
         Raises:
-            ValueError: If `name` or `type` are invalid.
+            ValueError: If `basename` or `type` are invalid.
         """
-
+        # Create full cell name
+        name = '{}{}'.format(basename, i)
         # Check if cell already exists
         if name in self._synapses:
             raise ValueError(
@@ -98,7 +94,7 @@ class Net(ABC):
         # Initialize cell synapses dict
         self._synapses[name] = dict()
         # Initialize bias to 0
-        self._synapses[name][_bias_] = 0
+        self._synapses[name][BIAS_KEY] = 0
         # Mark as input or output cell, if any
         if type == 'in':
             self._x.append(name)
@@ -107,24 +103,19 @@ class Net(ABC):
         elif type:
             raise ValueError('Invalid cell type "{}".'.format(type))
 
-    def add_cells(self, name, n, type=None):
+    def add_cells(self, basename, n, type=None):
         """Bulk add new cells to the net.
 
         Args:
-            name (str): Base name for the new cells (sequential numbers will follow).
+            basename (str): Base name for the new cells (sequential numbers will follow).
             n (int): Amount of cells to bulk add.
             type (str, optional): Defaults to None. Cell type ('in'/'out'/None).
 
         Raises:
-            ValueError: If `name` or `type` are invalid.
+            ValueError: If `basename` or `type` are invalid.
         """
         for i in range(n):
-            # If more than one use base name
-            if n > 1:
-                self.add_cell('{}{}'.format(name, i), type=type)
-            # Else use whole name
-            else:
-                self.add_cell(name, type=type)
+            self.add_cell(basename, i, type=type)
 
     def add_synapse(self, pre, post, weight):
         """Add a synapse between two cells in the net.
@@ -152,8 +143,8 @@ class Net(ABC):
         """Bulk adds synapses between two sets of cells in the net.
 
         Args:
-            pre (str): Pre-synaptic cell name (base name if `n` > 1).
-            post (str): Post-synaptic cell name (base name if `n` > 1).
+            pre (str): Pre-synaptic cell base name.
+            post (str): Post-synaptic cell base name.
             weight (float): Synaptic weight.
             n (int, optional): Defaults to 1. Amount of cells in the `pre` set.
             m (int, optional): Defaults to 1. Amount of cells in the `post` set.
@@ -164,18 +155,8 @@ class Net(ABC):
 
         for i in range(n):
             for j in range(m):
-                # If more than one use base name
-                if n > 1:
-                    _pre = '{}{}'.format(pre, i)
-                # Else use whole name
-                else:
-                    _pre = pre
-                # If more than one use base name
-                if m > 1:
-                    _post = '{}{}'.format(post, j)
-                # Else use whole name
-                else:
-                    _post = post
+                _pre = '{}{}'.format(pre, i)
+                _post = '{}{}'.format(post, j)
                 self.add_synapse(_pre, _post, weight)
 
     def randomize_synapses(self, low, high):
@@ -262,6 +243,9 @@ class Net(ABC):
             dataout (list): Ordered list of expected output instances.
             learn (float): Learning rate to use during training.
             epochs (int): Maximum number of epochs to train.
+
+        Returns:
+            list: Output MSE value throughout the epochs.
 
         Raises:
             ValueError: If `datain` or `dataout` are invalid.

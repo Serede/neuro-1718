@@ -7,7 +7,14 @@ import math
 from copy import deepcopy
 from doc_inherit import method_doc_inherit
 
-from neuro.base.net import Net
+from neuro.base.net import Net, BIAS_KEY
+
+# Input cells basename
+NAME_I = 'x'
+# Output cells basename
+NAME_O = 'y'
+# Hidden cells basename
+NAME_H = 'z'
 
 
 class MLPerceptron(Net):
@@ -18,28 +25,26 @@ class MLPerceptron(Net):
         sizein (int): Input layer size.
         sizeout (int): Output layer size.
         hsizes (list): Hidden layers sizes.
-        theta (float): Activation threshold.
     """
 
     name = None
     sizein = None
     sizeout = None
     hsizes = None
-    theta = None
     _hnames = None
 
-    def __init__(self, name, sizein, sizeout, hsizes, theta):
+    def __init__(self, name, sizein, sizeout, hsizes):
         if not hsizes:
             raise ValueError('Invalid hidden layers hsizes.')
         super().__init__(name)
         self.sizein = sizein
         self.sizeout = sizeout
         self.hsizes = hsizes
-        self.theta = theta
         self._hnames = []
         # For each hidden layer
         for i in range(len(hsizes)):
-            self._hnames.append('z' * (i + 1))
+            # Create base name
+            self._hnames.append(NAME_H * (i + 1))
             # Add hidden cells
             self.add_cells(self._hnames[i], hsizes[i])
             # Add synapses with previous hidden layer
@@ -47,13 +52,13 @@ class MLPerceptron(Net):
                 self.add_synapses(self._hnames[i-1], self._hnames[i],
                                   0, n=hsizes[i-1], m=hsizes[i])
         # Add input layer cells
-        self.add_cells('x', sizein, type='in')
+        self.add_cells(NAME_I, sizein, type='in')
         # Add output layer cells
-        self.add_cells('y', sizeout, type='out')
+        self.add_cells(NAME_O, sizeout, type='out')
         # Add input synapses
-        self.add_synapses('x', self._hnames[0], 0, n=sizein, m=hsizes[0])
+        self.add_synapses(NAME_I, self._hnames[0], 0, n=sizein, m=hsizes[0])
         # Add output synapses
-        self.add_synapses(self._hnames[i], 'y', 0, n=hsizes[i], m=sizeout)
+        self.add_synapses(self._hnames[i], NAME_O, 0, n=hsizes[i], m=sizeout)
 
     @method_doc_inherit
     def train(self, datain, dataout, learn, epochs):
@@ -64,6 +69,8 @@ class MLPerceptron(Net):
         if not 0 < learn <= 1:
             raise ValueError(
                 'Learning rate must be within the interval (0, 1].')
+        # Create list for MSE
+        mse = list()
         # Initialize stop condition to false
         stop = False
         # Initialize current epoch to zero
@@ -87,7 +94,7 @@ class MLPerceptron(Net):
                 # Initialize list of input deltas
                 δ_in = [t[j] - y[j] for j in range(len(y))]
                 # Create lists for retropropagation
-                names = ['y'] + self._hnames[::-1] + ['x']
+                names = [NAME_O] + self._hnames[::-1] + [NAME_I]
                 sizes = [self.sizeout] + self.hsizes[::-1] + [self.sizein]
                 # Retropropagation
                 for k in range(len(names) - 1):
@@ -103,7 +110,7 @@ class MLPerceptron(Net):
                             # Compute current delta
                             δ = δ_in[j] * self.df(zz_in)
                             # Save bias weight correction
-                            synapses[_zz][None] += learn * δ
+                            synapses[_zz][BIAS_KEY] += learn * δ
                             # For each cell in previous layer
                             for i in range(sizes[k + 1]):
                                 _z = '{}{}'.format(names[k + 1], i)
@@ -119,8 +126,17 @@ class MLPerceptron(Net):
                     δ_in = _δ_in
                 # Update synapses
                 self._synapses = synapses
+            # Test dataset at the end of current epoch
+            Y = self.test(datain)
+            # Compute residual sum of squares
+            rss = sum([sum([(dataout[i][j] - Y[i][j]) **
+                            2 for j in range(len(Y[i]))]) / len(Y[0]) for i in range(len(Y))])
+            # Append MSE value after current epoch
+            mse.append(rss / len(Y))
             # Move to next epoch
             epoch += 1
+        # Return MSE list
+        return mse
 
     @method_doc_inherit
     def f(self, y):
