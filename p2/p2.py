@@ -27,6 +27,7 @@ def main():
     init = float(args['init'])
     learn = float(args['learn'])
     epochs = int(args['epochs'])
+    normalize = args['normalize']
 
     if args['mode'] == 'mode1':
         sizein, sizeout, train, test = mode1(args['data'], args['ratio'])
@@ -37,10 +38,10 @@ def main():
     elif args['mode'] == 'mode3':
         sizein, sizeout, train, test = mode3(args['train'], args['test'])
 
-    p = MLPerceptron('MLPerceptron', sizein, sizeout, sizes)
+    p = MLPerceptron('MLPerceptron', sizein, sizeout, sizes, normalize=normalize)
     p.randomize_synapses(-init, init)
 
-    mse = p.train(train[0], train[1], learn, epochs)
+    p.train(train[0], train[1], learn, epochs)
 
     print('Train Score:', p.score(train[0], train[1], th=0.1))
 

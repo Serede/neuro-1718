@@ -15,19 +15,26 @@ class Net(ABC):
 
     Attributes:
         name (str): Net instance name.
+        normalize (bool, optional): Defaults to False. Normalize data.
     """
 
     name = None
+    normalize = None
 
     _x = None
     _y = None
     _synapses = None
+    _μ = None
+    _σ = None
 
-    def __init__(self, name):
+    def __init__(self, name, normalize=False):
         self.name = name
+        self.normalize = normalize
         self._x = list()
         self._y = list()
         self._synapses = dict()
+        self._μ = list()
+        self._σ = list()
 
     def __str__(self):
         pass
@@ -60,10 +67,14 @@ class Net(ABC):
             return 0
         # If input cell
         if c in self._x:
-            # Add values to history
-            hist[c] = [x[c], x[c]]
-            # Return input value from instance
-            return x[c]
+            # Get input cell index
+            i = self._x.index(c)
+            # Normalize input value from instance
+            _x = (x[c] - self._μ[i]) / self._σ[i]
+            # Add value to history (duplicated for data consistency)
+            hist[c] = [_x, _x]
+            # Return value
+            return _x
         # Get bias
         b = self._synapses[c][BIAS_KEY]
         # Weighted sum of ingoing synapses
@@ -98,6 +109,8 @@ class Net(ABC):
         # Mark as input or output cell, if any
         if type == 'in':
             self._x.append(name)
+            self._μ.append(0)
+            self._σ.append(1)
         elif type == 'out':
             self._y.append(name)
         elif type:
@@ -216,7 +229,7 @@ class Net(ABC):
         Args:
             datain (list): Ordered list of input instances to test.
             dataout (list): Ordered list of expected output instances.
-            th (float, optional): Maximum deviation for predicted values.
+            th (float, optional): Defaults to 0. Maximum deviation for predicted values.
 
         Raises:
             ValueError: If `datain` or `dataout` are invalid.

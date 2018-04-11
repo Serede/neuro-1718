@@ -28,14 +28,6 @@ neuro.parser module
     :undoc-members:
     :show-inheritance:
 
-neuro.perceptron module
------------------------
-
-.. automodule:: neuro.perceptron
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 
 Module contents
 ---------------

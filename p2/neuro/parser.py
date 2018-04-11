@@ -50,6 +50,8 @@ class Parser():
             '-l', '--learn', help='learning rate', required=True)
         self._parser.add_argument(
             '-e', '--epochs', help='maximum number of training epochs', required=True)
+        self._parser.add_argument(
+            '-z', '--normalize', help='normalize data', action='store_true')
 
         # Create subparsers
         sp = self._parser.add_subparsers(dest='mode', help='Working mode')

@@ -3,7 +3,8 @@
 """Multilayer Perceptron implementation.
 """
 
-import math
+from math import exp
+from statistics import mean, stdev
 from copy import deepcopy
 from doc_inherit import method_doc_inherit
 
@@ -33,10 +34,10 @@ class MLPerceptron(Net):
     hsizes = None
     _hnames = None
 
-    def __init__(self, name, sizein, sizeout, hsizes):
+    def __init__(self, name, sizein, sizeout, hsizes, normalize=False):
         if not hsizes:
             raise ValueError('Invalid hidden layers hsizes.')
-        super().__init__(name)
+        super().__init__(name, normalize=normalize)
         self.sizein = sizein
         self.sizeout = sizeout
         self.hsizes = hsizes
@@ -69,6 +70,14 @@ class MLPerceptron(Net):
         if not 0 < learn <= 1:
             raise ValueError(
                 'Learning rate must be within the interval (0, 1].')
+        # If normalize data is enabled
+        if self.normalize:
+            # For every input cell
+            for i in range(self.sizein):
+                # Save mean values
+                self._μ[i] = mean(x[i] for x in datain)
+                # Save standard deviations
+                self._σ[i] = stdev(x[i] for x in datain)
         # Create list for MSE
         mse = list()
         # Initialize stop condition to false
@@ -140,7 +149,7 @@ class MLPerceptron(Net):
 
     @method_doc_inherit
     def f(self, y):
-        return 2 / (1 + math.exp(-y)) - 1
+        return 2 / (1 + exp(-y)) - 1
 
     def df(self, y):
         """Net-wide transfer function derivative.

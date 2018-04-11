@@ -6,5 +6,3 @@ p2
 
    neuro
    p2
-   test
-   test_ml
