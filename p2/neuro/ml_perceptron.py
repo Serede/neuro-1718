@@ -26,6 +26,7 @@ class MLPerceptron(Net):
         sizein (int): Input layer size.
         sizeout (int): Output layer size.
         hsizes (list): Hidden layers sizes.
+        normalize (bool, optional): Defaults to False. Normalize data.
     """
 
     name = None

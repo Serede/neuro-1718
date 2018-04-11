@@ -67,10 +67,14 @@ class Net(ABC):
             return 0
         # If input cell
         if c in self._x:
-            # Get input cell index
-            i = self._x.index(c)
-            # Normalize input value from instance
-            _x = (x[c] - self._μ[i]) / self._σ[i]
+            # Get input value from instance
+            _x = x[c]
+            # If normalization required
+            if self.normalize:
+                # Get input cell index
+                i = self._x.index(c)
+                # Normalize value
+                _x = (_x - self._μ[i]) / self._σ[i]
             # Add value to history (duplicated for data consistency)
             hist[c] = [_x, _x]
             # Return value
@@ -223,8 +227,8 @@ class Net(ABC):
 
         return [self.test_instance(instance) for instance in data]
 
-    def score(self, datain, dataout, th=0):
-        """Compute ratio of successfully tested data.
+    def stats(self, datain, dataout, th=0):
+        """Gather statistics about test data.
 
         Args:
             datain (list): Ordered list of input instances to test.
@@ -235,7 +239,7 @@ class Net(ABC):
             ValueError: If `datain` or `dataout` are invalid.
 
         Returns:
-            float: Ratio of sucessfully tested data.
+            tuple: (score, confussion_matrix)
         """
 
         # Check that data sizes match
@@ -245,8 +249,25 @@ class Net(ABC):
         results = self.test(datain)
         # Get number of instances
         n = len(results)
-        # Return success ratio
-        return sum([1 for i in range(n) if all(abs(d - r) <= th for d, r in zip(dataout[i], results[i]))]) / n
+        # Initialize score
+        score = 0
+        # Create confussion matrix
+        r = range(len(self._y))
+        m = [[0 for _ in r] for _ in r]
+        # For every instance
+        for T, Y in zip(dataout, results):
+            # Get expected class
+            i = T.index(max(T))
+            # Get predicted class
+            j = Y.index(max(Y))
+            # If correct
+            if i == j:
+                # Add to score
+                score += 1
+            # Accumulate in confussion matrix
+            m[i][j] += 1
+        # Return both stats
+        return score/n, m
 
     @abstractmethod
     def train(self, datain, dataout, learn, epochs):
