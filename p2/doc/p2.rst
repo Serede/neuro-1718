@@ -1,0 +1,7 @@
+p2 module
+=========
+
+.. automodule:: p2
+    :members:
+    :undoc-members:
+    :show-inheritance:

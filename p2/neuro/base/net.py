@@ -210,12 +210,13 @@ class Net(ABC):
 
         return [self.test_instance(instance) for instance in data]
 
-    def score(self, datain, dataout):
+    def score(self, datain, dataout, th=0):
         """Compute ratio of successfully tested data.
 
         Args:
             datain (list): Ordered list of input instances to test.
             dataout (list): Ordered list of expected output instances.
+            th (float, optional): Maximum deviation for predicted values.
 
         Raises:
             ValueError: If `datain` or `dataout` are invalid.
@@ -232,7 +233,7 @@ class Net(ABC):
         # Get number of instances
         n = len(results)
         # Return success ratio
-        return sum([1 for i in range(n) if results[i] == dataout[i]]) / n
+        return sum([1 for i in range(n) if all(abs(d - r) <= th for d, r in zip(dataout[i], results[i]))]) / n
 
     @abstractmethod
     def train(self, datain, dataout, learn, epochs):

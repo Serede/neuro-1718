@@ -5,5 +5,6 @@ p2
    :maxdepth: 4
 
    neuro
+   p2
    test
    test_ml

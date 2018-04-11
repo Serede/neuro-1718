@@ -5,6 +5,7 @@
 
 from neuro.ml_perceptron import MLPerceptron
 from pprint import pprint
+from matplotlib import pyplot as plt
 
 ################################################################
 
@@ -31,6 +32,7 @@ pprint(p.test(datain))
 print('Expected:')
 pprint(dataout, width=10)
 
+print('Score:', p.score(datain, dataout, 0.1))
 print(64 * '"')
 
 ################################################################
@@ -58,6 +60,7 @@ pprint(p.test(datain))
 print('Expected:')
 pprint(dataout, width=10)
 
+print('Score:', p.score(datain, dataout, 0.1))
 print(64 * '"')
 
 ################################################################
@@ -85,6 +88,7 @@ pprint(p.test(datain))
 print('Expected:')
 pprint(dataout, width=10)
 
+print('Score:', p.score(datain, dataout, 0.1))
 print(64 * '"')
 
 ################################################################
@@ -112,9 +116,8 @@ pprint(p.test(datain))
 print('Expected:')
 pprint(dataout, width=10)
 
+print('Score:', p.score(datain, dataout, 0.1))
 print(64 * '"')
-
-from matplotlib import pyplot as plt
 
 plt.plot(range(1000), mse)
 plt.show()
