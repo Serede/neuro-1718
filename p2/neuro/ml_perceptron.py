@@ -4,7 +4,6 @@
 """
 
 from math import exp
-from statistics import mean, stdev
 from copy import deepcopy
 try:
     from doc_inherit import method_doc_inherit
