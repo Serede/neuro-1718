@@ -95,12 +95,12 @@ def mode1(data_file, ratio):
         tuple: (sizein, sizeout, train, test)
     """
 
-    print('*** RUNNING IN MODE 1 ***')
+    print('Running in Mode 1')
     # Load the dataset
     ds = Dataset(data_file)
     train, test = ds.partition(float(ratio))
-    print('Train instances: {}'.format(len(train[0])))
-    print('Test instances: {}'.format(len(test[0])))
+    print('- Train instances: {}'.format(len(train[0])))
+    print('- Test instances: {}'.format(len(test[0])))
 
     return ds.sizein, ds.sizeout, train, test
 
@@ -115,13 +115,13 @@ def mode2(data_file):
         tuple: (sizein, sizeout, train, test)
     """
 
-    print('*** RUNNING IN MODE 2 ***')
+    print('Running in Mode 2')
     # Load the dataset
     ds = Dataset(data_file)
     train = ds.data()
     test = ds.data()
-    print('Train instances: {}'.format(len(train[0])))
-    print('Test instances: {}'.format(len(test[0])))
+    print('- Train instances: {}'.format(len(train[0])))
+    print('- Test instances: {}'.format(len(test[0])))
 
     return ds.sizein, ds.sizeout, train, test
 
@@ -136,7 +136,7 @@ def mode3(train_file, test_file):
     Returns:
         tuple: (sizein, sizeout, train, test)
     """
-    print('*** RUNNING IN MODE 3 ***')
+    print('Running in Mode 3')
     # Load train dataset
     ds1 = Dataset(train_file)
     train = ds1.data()
@@ -144,7 +144,7 @@ def mode3(train_file, test_file):
     ds2 = Dataset(test_file)
     test = ds2.data()
 
-    print('Train instances: {}'.format(len(train[0])))
-    print('Test instances: {}'.format(len(test[0])))
+    print('- Train instances: {}'.format(len(train[0])))
+    print('- Test instances: {}'.format(len(test[0])))
 
     return ds1.sizein, ds1.sizeout, train, test

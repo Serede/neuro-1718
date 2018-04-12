@@ -1,6 +1,13 @@
 neuro package
 =============
 
+Subpackages
+-----------
+
+.. toctree::
+
+    neuro.base
+
 Submodules
 ----------
 

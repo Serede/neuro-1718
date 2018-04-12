@@ -14,8 +14,8 @@
 #
 import os
 import sys
-
 sys.path.insert(0, os.path.abspath('..'))
+
 
 # -- Project information -----------------------------------------------------
 
@@ -27,6 +27,7 @@ author = 'Sergio Fuentes and Adrián Muñoz'
 version = ''
 # The full version, including alpha/beta/rc tags
 release = ''
+
 
 # -- General configuration ---------------------------------------------------
 
@@ -72,6 +73,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -106,6 +108,7 @@ html_static_path = ['_static']
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'neuro-p2doc'
 
+
 # -- Options for LaTeX output ------------------------------------------------
 
 latex_elements = {
@@ -134,6 +137,7 @@ latex_documents = [
      'Sergio Fuentes and Adrián Muñoz', 'manual'),
 ]
 
+
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
@@ -142,6 +146,7 @@ man_pages = [
     (master_doc, 'neuro-p2', 'neuro-p2 Documentation',
      [author], 1)
 ]
+
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -153,6 +158,7 @@ texinfo_documents = [
      author, 'neuro-p2', 'One line description of project.',
      'Miscellaneous'),
 ]
+
 
 # -- Extension configuration -------------------------------------------------
 

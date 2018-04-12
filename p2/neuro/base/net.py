@@ -5,6 +5,7 @@
 
 from abc import ABC, abstractmethod
 from random import uniform
+from statistics import mean, stdev
 
 # Use special key None for bias weights
 BIAS_KEY = None
@@ -15,31 +16,25 @@ class Net(ABC):
 
     Attributes:
         name (str): Net instance name.
-        normalize (bool, optional): Defaults to False. Normalize data.
     """
 
     name = None
-    normalize = None
 
     _x = None
     _y = None
     _synapses = None
+    _normalize = None
     _μ = None
     _σ = None
 
-    def __init__(self, name, normalize=False):
+    def __init__(self, name):
         self.name = name
-        self.normalize = normalize
         self._x = list()
         self._y = list()
         self._synapses = dict()
+        self._normalize = False
         self._μ = list()
         self._σ = list()
-
-    def __str__(self):
-        pass
-
-    __repr__ = __str__
 
     def _dfs(self, c, instance, hist=dict()):
         """Internal implementation of Depth First Search for cell transfers.
@@ -67,10 +62,14 @@ class Net(ABC):
             return 0
         # If input cell
         if c in self._x:
-            # Get input cell index
-            i = self._x.index(c)
-            # Normalize input value from instance
-            _x = (x[c] - self._μ[i]) / self._σ[i]
+            # Get input value from instance
+            _x = x[c]
+            # If normalization enabled
+            if self._normalize:
+                # Get input cell index
+                i = self._x.index(c)
+                # Normalize value
+                _x = (_x - self._μ[i]) / self._σ[i]
             # Add value to history (duplicated for data consistency)
             hist[c] = [_x, _x]
             # Return value
@@ -173,7 +172,7 @@ class Net(ABC):
                 self.add_synapse(_pre, _post, weight)
 
     def randomize_synapses(self, low, high):
-        """Randomizes synaptic weights between given values.
+        """Randomize synaptic weights between given values.
 
         Args:
             low (float): Minimum weight value.
@@ -190,6 +189,36 @@ class Net(ABC):
                     w = uniform(low, high)
                 # Set synaptic weight
                 self._synapses[b][a] = w
+
+    def normalize(self, data=None):
+        """Enable (or disable) input normalization.
+
+        Args:
+            data (list, optional): Defaults to None. List of input instances to normalize, or None to disable normalization.
+
+        Raises:
+            ValueError: If `data` is invalid.
+        """
+
+        # Disable normalization if data is None
+        if data is None:
+            self._normalize = False
+            return
+
+        # Enable normalization
+        self._normalize = True
+        # Watch out for a size mismatch
+        try:
+            # For every input cell
+            for i in range(len(self._x)):
+                # Save mean value
+                self._μ[i] = mean(x[i] for x in data)
+                # Save standard deviation
+                self._σ[i] = stdev(x[i] for x in data)
+        # Catch input size mismatch exceptions
+        except IndexError:
+            raise ValueError(
+                'Input instance size mismatch ({}).'.format(len(self._x)))
 
     def test_instance(self, instance, hist=dict()):
         """Run the net with an instance as input.
@@ -223,19 +252,18 @@ class Net(ABC):
 
         return [self.test_instance(instance) for instance in data]
 
-    def score(self, datain, dataout, th=0):
-        """Compute ratio of successfully tested data.
+    def stats(self, datain, dataout):
+        """Gather statistics about test data classification.
 
         Args:
             datain (list): Ordered list of input instances to test.
             dataout (list): Ordered list of expected output instances.
-            th (float, optional): Defaults to 0. Maximum deviation for predicted values.
 
         Raises:
             ValueError: If `datain` or `dataout` are invalid.
 
         Returns:
-            float: Ratio of sucessfully tested data.
+            tuple: (score, confussion_matrix)
         """
 
         # Check that data sizes match
@@ -245,11 +273,28 @@ class Net(ABC):
         results = self.test(datain)
         # Get number of instances
         n = len(results)
-        # Return success ratio
-        return sum([1 for i in range(n) if all(abs(d - r) <= th for d, r in zip(dataout[i], results[i]))]) / n
+        # Initialize score
+        score = 0
+        # Create confussion matrix
+        r = range(len(self._y))
+        m = [[0 for _ in r] for _ in r]
+        # For every instance
+        for T, Y in zip(dataout, results):
+            # Get expected class
+            i = T.index(max(T))
+            # Get predicted class
+            j = Y.index(max(Y))
+            # If correct
+            if i == j:
+                # Add to score
+                score += 1
+            # Accumulate in confussion matrix
+            m[i][j] += 1
+        # Return both stats
+        return score/n, m
 
     @abstractmethod
-    def train(self, datain, dataout, learn, epochs):
+    def train(self, datain, dataout, learn, epochs, normalize=False):
         """Adjust net weights from training data.
 
         Args:
@@ -257,6 +302,7 @@ class Net(ABC):
             dataout (list): Ordered list of expected output instances.
             learn (float): Learning rate to use during training.
             epochs (int): Maximum number of epochs to train.
+            normalize (bool, optional): Defaults to False. Normalize data.
 
         Returns:
             list: Output MSE value throughout the epochs.
