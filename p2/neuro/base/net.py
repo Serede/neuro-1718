@@ -5,6 +5,7 @@
 
 from abc import ABC, abstractmethod
 from random import uniform
+from statistics import mean, stdev
 
 # Use special key None for bias weights
 BIAS_KEY = None
@@ -23,8 +24,8 @@ class Net(ABC):
     _y = None
     _synapses = None
     _normalize = None
-    _min = None
-    _max = None
+    _μ = None
+    _σ = None
 
     def __init__(self, name):
         self.name = name
@@ -32,8 +33,8 @@ class Net(ABC):
         self._y = list()
         self._synapses = dict()
         self._normalize = False
-        self._min = list()
-        self._max = list()
+        self._μ = list()
+        self._σ = list()
 
     def _dfs(self, c, instance, hist=dict()):
         """Internal implementation of Depth First Search for cell transfers.
@@ -67,9 +68,8 @@ class Net(ABC):
             if self._normalize:
                 # Get input cell index
                 i = self._x.index(c)
-                # Normalize value to [-1, 1]
-                _x = 2 * (_x - self._min[i]) / \
-                    (self._max[i] - self._min[i]) - 1
+                # Normalize value
+                _x = (_x - self._μ[i]) / self._σ[i]
             # Add value to history (duplicated for data consistency)
             hist[c] = [_x, _x]
             # Return value
@@ -108,8 +108,8 @@ class Net(ABC):
         # Mark as input or output cell, if any
         if type == 'in':
             self._x.append(name)
-            self._min.append(0)
-            self._max.append(0)
+            self._μ.append(0)
+            self._σ.append(1)
         elif type == 'out':
             self._y.append(name)
         elif type:
@@ -211,10 +211,10 @@ class Net(ABC):
         try:
             # For every input cell
             for i in range(len(self._x)):
-                # Save minimum
-                self._min[i] = min(x[i] for x in data)
-                # Save maximum
-                self._max[i] = max(x[i] for x in data)
+                # Save mean value
+                self._μ[i] = mean(x[i] for x in data)
+                # Save standard deviation
+                self._σ[i] = stdev(x[i] for x in data)
         # Catch input size mismatch exceptions
         except IndexError:
             raise ValueError(
