@@ -55,20 +55,19 @@ def main():
     p.randomize_synapses(-init, init)
 
     print()
-    print('Training...', end='', flush=True)
     t0 = time()
     p.train(train[0], train[1], learn, epochs, normalize=normalize)
     t = time()
-    print(' Done!')
+    print()
     print('Elapsed time: {0:.3f} seconds'.format(t - t0))
     print()
 
-    score, m = p.stats(train[0], train[1], th=0.1)
+    score, m = p.stats(train[0], train[1])
 
     print('Train Score:', score)
 
     if args['mode'] == 'mode1':
-        print('Test Score:', p.stats(test[0], test[1], th=0.1)[0])
+        print('Test Score:', p.stats(test[0], test[1])[0])
     elif args['mode'] == 'mode2':
         print('Test Score:', score)
     elif args['mode'] == 'mode3':

@@ -75,6 +75,8 @@ class MLPerceptron(Net):
         if not 0 < learn <= 1:
             raise ValueError(
                 'Learning rate must be within the interval (0, 1].')
+        # Print initial progress
+        print('Training... 0%', end='\r')
         # Normalize input if required
         if normalize:
             self.normalize(datain)
@@ -144,12 +146,27 @@ class MLPerceptron(Net):
             mse.append(rss / len(Y))
             # Move to next epoch
             epoch += 1
+            # Print current progress
+            print('Training... {}%'.format(
+                int(100 * epoch / epochs)), end='\r', flush=True)
+        # Print end of line
+        print()
         # Return MSE list
         return mse
 
     @method_doc_inherit
     def f(self, y):
-        return 2 / (1 + exp(-y)) - 1
+        # Watch out for overflows
+        try:
+            return 2 / (1 + exp(-y)) - 1
+        # If exponential overflow
+        except OverflowError:
+            # Saturate accordingly
+            if y < 0:
+                return -1.0
+            else:
+                return 1.0
+
 
     def df(self, y):
         """Net-wide transfer function derivative.

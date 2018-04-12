@@ -252,13 +252,12 @@ class Net(ABC):
 
         return [self.test_instance(instance) for instance in data]
 
-    def stats(self, datain, dataout, th=0):
-        """Gather statistics about test data.
+    def stats(self, datain, dataout):
+        """Gather statistics about test data classification.
 
         Args:
             datain (list): Ordered list of input instances to test.
             dataout (list): Ordered list of expected output instances.
-            th (float, optional): Defaults to 0. Maximum deviation for predicted values.
 
         Raises:
             ValueError: If `datain` or `dataout` are invalid.
