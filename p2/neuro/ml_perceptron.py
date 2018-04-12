@@ -6,7 +6,12 @@
 from math import exp
 from statistics import mean, stdev
 from copy import deepcopy
-from doc_inherit import method_doc_inherit
+try:
+    from doc_inherit import method_doc_inherit
+except ImportError:
+    # Dummy decorator (docstrings will not be inherited)
+    def method_doc_inherit(func):
+        return func
 
 from neuro.base.net import Net, BIAS_KEY
 
@@ -26,7 +31,6 @@ class MLPerceptron(Net):
         sizein (int): Input layer size.
         sizeout (int): Output layer size.
         hsizes (list): Hidden layers sizes.
-        normalize (bool, optional): Defaults to False. Normalize data.
     """
 
     name = None
@@ -35,10 +39,10 @@ class MLPerceptron(Net):
     hsizes = None
     _hnames = None
 
-    def __init__(self, name, sizein, sizeout, hsizes, normalize=False):
+    def __init__(self, name, sizein, sizeout, hsizes):
         if not hsizes:
-            raise ValueError('Invalid hidden layers hsizes.')
-        super().__init__(name, normalize=normalize)
+            raise ValueError('Invalid hidden layers sizes.')
+        super().__init__(name)
         self.sizein = sizein
         self.sizeout = sizeout
         self.hsizes = hsizes
@@ -63,7 +67,7 @@ class MLPerceptron(Net):
         self.add_synapses(self._hnames[i], NAME_O, 0, n=hsizes[i], m=sizeout)
 
     @method_doc_inherit
-    def train(self, datain, dataout, learn, epochs):
+    def train(self, datain, dataout, learn, epochs, normalize=False):
         # Check that data sizes match
         if len(datain) != len(dataout):
             raise ValueError('Input and output instance counts do not match.')
@@ -71,14 +75,9 @@ class MLPerceptron(Net):
         if not 0 < learn <= 1:
             raise ValueError(
                 'Learning rate must be within the interval (0, 1].')
-        # If normalize data is enabled
-        if self.normalize:
-            # For every input cell
-            for i in range(self.sizein):
-                # Save mean values
-                self._μ[i] = mean(x[i] for x in datain)
-                # Save standard deviations
-                self._σ[i] = stdev(x[i] for x in datain)
+        # Normalize input if required
+        if normalize:
+            self.normalize(datain)
         # Create list for MSE
         mse = list()
         # Initialize stop condition to false

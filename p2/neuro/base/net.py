@@ -15,31 +15,25 @@ class Net(ABC):
 
     Attributes:
         name (str): Net instance name.
-        normalize (bool, optional): Defaults to False. Normalize data.
     """
 
     name = None
-    normalize = None
 
     _x = None
     _y = None
     _synapses = None
-    _μ = None
-    _σ = None
+    _normalize = None
+    _min = None
+    _max = None
 
-    def __init__(self, name, normalize=False):
+    def __init__(self, name):
         self.name = name
-        self.normalize = normalize
         self._x = list()
         self._y = list()
         self._synapses = dict()
-        self._μ = list()
-        self._σ = list()
-
-    def __str__(self):
-        pass
-
-    __repr__ = __str__
+        self._normalize = False
+        self._min = list()
+        self._max = list()
 
     def _dfs(self, c, instance, hist=dict()):
         """Internal implementation of Depth First Search for cell transfers.
@@ -69,12 +63,13 @@ class Net(ABC):
         if c in self._x:
             # Get input value from instance
             _x = x[c]
-            # If normalization required
-            if self.normalize:
+            # If normalization enabled
+            if self._normalize:
                 # Get input cell index
                 i = self._x.index(c)
-                # Normalize value
-                _x = (_x - self._μ[i]) / self._σ[i]
+                # Normalize value to [-1, 1]
+                _x = 2 * (_x - self._min[i]) / \
+                    (self._max[i] - self._min[i]) - 1
             # Add value to history (duplicated for data consistency)
             hist[c] = [_x, _x]
             # Return value
@@ -113,8 +108,8 @@ class Net(ABC):
         # Mark as input or output cell, if any
         if type == 'in':
             self._x.append(name)
-            self._μ.append(0)
-            self._σ.append(1)
+            self._min.append(0)
+            self._max.append(0)
         elif type == 'out':
             self._y.append(name)
         elif type:
@@ -177,7 +172,7 @@ class Net(ABC):
                 self.add_synapse(_pre, _post, weight)
 
     def randomize_synapses(self, low, high):
-        """Randomizes synaptic weights between given values.
+        """Randomize synaptic weights between given values.
 
         Args:
             low (float): Minimum weight value.
@@ -194,6 +189,36 @@ class Net(ABC):
                     w = uniform(low, high)
                 # Set synaptic weight
                 self._synapses[b][a] = w
+
+    def normalize(self, data=None):
+        """Enable (or disable) input normalization.
+
+        Args:
+            data (list, optional): Defaults to None. List of input instances to normalize, or None to disable normalization.
+
+        Raises:
+            ValueError: If `data` is invalid.
+        """
+
+        # Disable normalization if data is None
+        if data is None:
+            self._normalize = False
+            return
+
+        # Enable normalization
+        self._normalize = True
+        # Watch out for a size mismatch
+        try:
+            # For every input cell
+            for i in range(len(self._x)):
+                # Save minimum
+                self._min[i] = min(x[i] for x in data)
+                # Save maximum
+                self._max[i] = max(x[i] for x in data)
+        # Catch input size mismatch exceptions
+        except IndexError:
+            raise ValueError(
+                'Input instance size mismatch ({}).'.format(len(self._x)))
 
     def test_instance(self, instance, hist=dict()):
         """Run the net with an instance as input.
@@ -270,7 +295,7 @@ class Net(ABC):
         return score/n, m
 
     @abstractmethod
-    def train(self, datain, dataout, learn, epochs):
+    def train(self, datain, dataout, learn, epochs, normalize=False):
         """Adjust net weights from training data.
 
         Args:
@@ -278,6 +303,7 @@ class Net(ABC):
             dataout (list): Ordered list of expected output instances.
             learn (float): Learning rate to use during training.
             epochs (int): Maximum number of epochs to train.
+            normalize (bool, optional): Defaults to False. Normalize data.
 
         Returns:
             list: Output MSE value throughout the epochs.

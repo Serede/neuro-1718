@@ -1,5 +1,5 @@
 .. neuro-p2 documentation master file, created by
-   sphinx-quickstart on Sat Mar 17 02:25:36 2018.
+   sphinx-quickstart on Thu Apr 12 02:31:57 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 

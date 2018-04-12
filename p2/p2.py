@@ -51,14 +51,13 @@ def main():
     elif args['mode'] == 'mode3':
         sizein, sizeout, train, test = mode3(args['train'], args['test'])
 
-    p = MLPerceptron('MLPerceptron', sizein, sizeout,
-                     sizes, normalize=normalize)
+    p = MLPerceptron('MLPerceptron', sizein, sizeout, sizes)
     p.randomize_synapses(-init, init)
 
     print()
     print('Training...', end='', flush=True)
     t0 = time()
-    p.train(train[0], train[1], learn, epochs)
+    p.train(train[0], train[1], learn, epochs, normalize=normalize)
     t = time()
     print(' Done!')
     print('Elapsed time: {0:.3f} seconds'.format(t - t0))
@@ -79,7 +78,9 @@ def main():
             fileout.write('{} {}\n'.format(sizein, sizeout))
             for i in range(len(res)):
                 x = ' '.join([str(x) for x in test[0][i]])
-                y = ' '.join([str(y) for y in res[i]])
+                r = [-1] * len(res[i])
+                r[res[i].index(max(res[i]))] = 1
+                y = ' '.join([str(y) for y in r])
                 fileout.write('{} {}\n'.format(x, y))
         print('Test predictions were written to \'{}\'.'.format(f))
 
