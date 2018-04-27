@@ -28,15 +28,18 @@ class Alphabet:
         self._data = np.asarray(data).astype(int)
         self._size , self._resolution = self._data.shape
 
-    def export(self, n, errors,filename):
-        data = np.tile(self._data, (n, 1))
+    def export(self, n, errors,filename,subset=None):
+        data = np.tile(self._data[:subset], (n, 1))
 
         with open(filename,'w') as file:
+
+            file.write('{} {}'.format(self._resolution, self._resolution) + '\n')
+
             for i in range(data.shape[0]):
                 r = np.random.choice(range(self._resolution),size=errors)
                 data[i][r] = 1 - data[i][r]
 
-                file.write(' '.join(data[i].astype(str)) + '\n')
+                file.write(' '.join(data[i].astype(str)) +' '+' '.join(self._data[i%self._size].astype(str)) + '\n')
 
 
         return data
