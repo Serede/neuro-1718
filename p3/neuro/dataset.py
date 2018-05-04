@@ -59,11 +59,12 @@ class Dataset:
 
         return self._datain, self._dataout
 
-    def partition(self, ratio):
+    def partition(self, ratio, shuffle=True):
         """Partition data randomly for given ratio.
 
         Args:
             ratio (float): Ratio for train.
+            shuffle (bool, optional): Defaults to True. Shuffle data.
 
         Raises:
             ValueError: If `ratio` is invalid.
@@ -80,7 +81,8 @@ class Dataset:
         # Create list of indices
         indices = list(range(self.count))
         # Shuffle list of indices
-        shuffle(indices)
+        if shuffle:
+            shuffle(indices)
         # Create train partition
         train = list()
         train.append(list(map(self._datain.__getitem__, indices[:split])))

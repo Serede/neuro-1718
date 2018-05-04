@@ -68,8 +68,7 @@ class Autoencoder(MLPerceptron):
         for T, Y in zip(dataout, results):
             e = sum([t != y for t, y in zip(T, Y)])
             print(10 * '*')
-            print('T =', T)
-            print('Y =', Y)
+            print('Diff: ', [int(t != y) for t, y in zip(T, Y)])
             print(10 * '*')
 
             # Check if the output is correct

@@ -1,6 +1,6 @@
 import numpy as np
 
-class Series:
+class SeriesAdapter:
 
     filename=None
     _data = None
