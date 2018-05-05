@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 
 class Alphabet:
 
@@ -30,6 +31,7 @@ class Alphabet:
 
     def export(self, n, errors,filename,subset=None):
         data = np.tile(self._data[:subset], (n, 1))
+        clean_data = deepcopy(data)
 
         with open(filename,'w') as file:
 
@@ -39,7 +41,7 @@ class Alphabet:
                 r = np.random.choice(range(self._resolution),size=errors)
                 data[i][r] = 1 - data[i][r]
 
-                file.write(' '.join(data[i].astype(str)) +' '+' '.join(self._data[i%self._size].astype(str)) + '\n')
+                file.write(' '.join(data[i].astype(str)) +' '+' '.join(clean_data[i%clean_data.shape[0]].astype(str)) + '\n')
 
 
         return data
