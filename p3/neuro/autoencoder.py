@@ -35,7 +35,7 @@ class Autoencoder(MLPerceptron):
             list: Ordered list of output instances.
         """
 
-        return [list(map(lambda x: 2*int(x>0)-1, d)) for d in super().test(data)]
+        return [list(map(lambda x: 2 * int(x > 0) - 1, d)) for d in super().test(data)]
 
     def stats(self, datain, dataout):
         """Gather statistics about test data classification.
@@ -57,8 +57,6 @@ class Autoencoder(MLPerceptron):
 
         # Run test for input data
         results = self.test(datain)
-        # Get number of instances
-        n = len(results)
         # Initialize metrics
         wo = 0
 
@@ -67,9 +65,9 @@ class Autoencoder(MLPerceptron):
         # For every instance
         for T, Y in zip(dataout, results):
             e = sum([t != y for t, y in zip(T, Y)])
-            print(10 * '*')
-            print('Diff: ', [int(t != y) for t, y in zip(T, Y)])
-            print(10 * '*')
+            #print(10 * '*')
+            #print('Diff: ', [int(t != y) for t, y in zip(T, Y)])
+            #print(10 * '*')
 
             # Check if the output is correct
             if e == 0:

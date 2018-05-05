@@ -65,7 +65,6 @@ class MLPerceptron(Net):
         # Add output synapses
         self.add_synapses(self._hnames[i], NAME_O, 0, n=hsizes[i], m=sizeout)
 
-    @method_doc_inherit
     def train(self, datain, dataout, learn, epochs, normalize=False):
         # Check that data sizes match
         if len(datain) != len(dataout):
@@ -153,7 +152,6 @@ class MLPerceptron(Net):
         # Return MSE list
         return mse
 
-    @method_doc_inherit
     def f(self, y):
         # Watch out for overflows
         try:
