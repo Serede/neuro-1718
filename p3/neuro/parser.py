@@ -84,13 +84,13 @@ class Parser():
     parse_args = None
 
 
-def mode1(data_file, ratio, shuffle=True):
+def mode1(data_file, ratio, shuff=True):
     """Prepares data for mode 1.
 
     Args:
         data_file (str): Dataset file.
         ratio (float): Ratio for train.
-        shuffle (bool, optional): Defaults to True. Shuffle data.
+        shuff (bool, optional): Defaults to True. Shuffle data.
 
     Returns:
         tuple: (sizein, sizeout, train, test)
@@ -99,14 +99,14 @@ def mode1(data_file, ratio, shuffle=True):
     print('Running in Mode 1')
     # Load the dataset
     ds = Dataset(data_file)
-    train, test = ds.partition(float(ratio), shuffle=shuffle)
+    train, test = ds.partition(float(ratio), shuff=shuff)
     print('- Train instances: {}'.format(len(train[0])))
     print('- Test instances: {}'.format(len(test[0])))
 
     return ds.sizein, ds.sizeout, train, test
 
 
-def mode2(data_file,shuffle=True):
+def mode2(data_file):
     """Prepares data for mode 2.
 
     Args:

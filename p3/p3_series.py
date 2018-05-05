@@ -45,7 +45,7 @@ def main():
     normalize = args['normalize']
 
     if args['mode'] == 'mode1':
-        sizein, sizeout, train, test = mode1(args['data'], args['ratio'], shuffle=False)
+        sizein, sizeout, train, test = mode1(args['data'], args['ratio'])
     elif args['mode'] == 'mode2':
         sizein, sizeout, train, test = mode2(args['data'])
     elif args['mode'] == 'mode3':
