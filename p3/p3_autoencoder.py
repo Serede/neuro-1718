@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Main program.
+"""Main program for Autoencoder.
 """
 
 from time import time
@@ -65,7 +65,7 @@ def main():
         two, tmwo, tci = p.stats(test[0], test[1])
         print('Wrong outputs in test:', two)
         print('Mean wrong outputs in test:', tmwo)
-        print('Correct instances in test:', ci)
+        print('Correct instances in test:', tci)
     elif args['mode'] == 'mode2':
         print('Wrong outputs:', wo)
         print('Mean wrong outputs:', mwo)

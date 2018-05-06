@@ -1,11 +1,10 @@
 
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Main program.
+"""Main program for Crear_alfabeto.
 """
 
 import sys
-from time import time
 
 from alphabet import Alphabet
 
@@ -27,7 +26,6 @@ def main():
     n_errors = int(sys.argv[2])
     file_in = sys.argv[3]
     file_out = sys.argv[4]
-
 
     a = Alphabet(filename=file_in)
     a.export(n_copies, n_errors, filename=file_out)

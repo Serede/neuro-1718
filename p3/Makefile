@@ -1,15 +1,19 @@
 PYTHON = python3
-MAIN = p2.py
+AUTOENCODER = p3_autoencoder.py
+SERIES = p3_series.py
 
-.PHONY: all retro_help retro_exec retro_exec_6
+.PHONY: all autoencoder_help autoencoder_exec series_help series_exec
 
-all: retro_help
+all: autoencoder_help series_help
 
-retro_help:
-	$(PYTHON) $(MAIN) -h
+autoencoder_help:
+	$(AUTOENCODER) -h
 
-retro_exec:
-	$(PYTHON) $(MAIN) -s 2 -i 1 -l 0.25 -e 500 mode1 -d data/problema_real2.txt -r 0.7
+autoencoder_exec:
+	$(AUTOENCODER) -s 10 -i 1 -l 0.25 -e 100 mode2 -d data/alfabeto_2e_7c.txt
 
-retro_exec_6:
-	$(PYTHON) $(MAIN) -s 2 -i 1 -l 0.25 -e 100 -z mode1 -d data/problema_real6.txt -r 0.7
+series_help:
+	$(PYTHON) $(SERIES) -h
+
+series_exec:
+	$(PYTHON) $(SERIES) -s 2 -i 1 -l 0.25 -e 100 mode1 -d data/serie1_3_1.txt -r 0.7
