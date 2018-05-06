@@ -7,10 +7,10 @@ SERIES = p3_series.py
 all: autoencoder_help series_help
 
 autoencoder_help:
-	$(AUTOENCODER) -h
+	$(PYTHON) $(AUTOENCODER) -h
 
 autoencoder_exec:
-	$(AUTOENCODER) -s 10 -i 1 -l 0.25 -e 100 mode2 -d data/alfabeto_2e_7c.txt
+	$(PYTHON) $(AUTOENCODER) -s 10 -i 1 -l 0.25 -e 100 mode2 -d data/alfabeto_2e_7c.txt
 
 series_help:
 	$(PYTHON) $(SERIES) -h
