@@ -3,10 +3,7 @@
 """Series implementation.
 """
 
-from neuro.ml_perceptron import MLPerceptron
-
-# Use special key None for bias weights
-BIAS_KEY = None
+from neuro.ml_perceptron import MLPerceptron, BIAS_KEY
 
 
 class Series(MLPerceptron):
@@ -66,30 +63,9 @@ class Series(MLPerceptron):
         s = sum([w * self._dfs(d, instance, hist=hist)
                  for d, w in self._synapses[c].items() if d is not BIAS_KEY])
         # Add values to history
-        hist[c] = [b + s, self.f(b + s)]
-        # If output cell
-        if c in self._y:
-            # Linear output
-            return b + s
-        # Else
-        else:
-            # Sigmoid output
-            return self.f(b + s)
-
-    def test(self, data):
-        """Run the net for an ordered list of instances.
-
-        Args:
-            data (list): Ordered list of input instances.
-
-        Raises:
-            ValueError: If `data` is invalid.
-
-        Returns:
-            list: Ordered list of output instances.
-        """
-
-        return [list(map(lambda x: 2*int(x>0)-1, d)) for d in super().test(data)]
+        hist[c] = [b + s, b + s]
+        # Return output value
+        return b + s
 
     def stats(self, datain, dataout):
         """Gather statistics about test data classification.
@@ -102,7 +78,7 @@ class Series(MLPerceptron):
             ValueError: If `datain` or `dataout` are invalid.
 
         Returns:
-            tuple: (score, confussion_matrix)
+            tuple: (ecm, basic)
         """
 
         # Check that data sizes match
@@ -112,22 +88,13 @@ class Series(MLPerceptron):
         results = self.test(datain)
         # Get number of instances
         n = len(results)
-        # Initialize score
-        score = 0
-        # Create confussion matrix
-        r = range(len(self._y))
-        m = [[0 for _ in r] for _ in r]
+        # Initialize ECM metrics
+        ecm = 0
+        basic = 0
         # For every instance
-        for T, Y in zip(dataout, results):
-            # Get expected class
-            i = T.index(max(T))
-            # Get predicted class
-            j = Y.index(max(Y))
-            # If correct
-            if i == j:
-                # Add to score
-                score += 1
-            # Accumulate in confussion matrix
-            m[i][j] += 1
+        for X, T, Y in zip(datain, dataout, results):
+            # Accumulate ECM metrics
+            ecm += sum([(t - y) ** 2 for t, y in zip(T, Y)])
+            basic += sum([(t - X[-1]) ** 2 for t in T])
         # Return both stats
-        return score/n, m
+        return ecm/n, basic/n

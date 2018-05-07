@@ -3,10 +3,7 @@
 """Autoencoder implementation.
 """
 
-from neuro.ml_perceptron import MLPerceptron
-
-# Use special key None for bias weights
-BIAS_KEY = None
+from neuro.ml_perceptron import MLPerceptron, BIAS_KEY
 
 
 class Autoencoder(MLPerceptron):
@@ -48,7 +45,7 @@ class Autoencoder(MLPerceptron):
             ValueError: If `datain` or `dataout` are invalid.
 
         Returns:
-            tuple: (wrong_outputs, mean_wrong_output, correct_instances)
+            tuple: (wrong_outputs, mean_wrong_outputs, correct_instances)
         """
 
         # Check that data sizes match

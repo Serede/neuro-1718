@@ -62,29 +62,18 @@ def main():
     print('Elapsed time: {0:.3f} seconds'.format(t - t0))
     print()
 
-    score, m = p.stats(train[0], train[1])
+    ecm, basic = p.stats(test[0], test[1])
 
-    print('Train Score:', score)
+    print('Statistics:')
+    print('ECM = ', ecm)
+    print('Basic ECM = ', basic)
 
-    if args['mode'] == 'mode1':
-        print('Test Score:', p.stats(test[0], test[1])[0])
-    elif args['mode'] == 'mode2':
-        print('Test Score:', score)
-    elif args['mode'] == 'mode3':
-        f = args['output']
-        res = p.test(test[0])
-        with open(f, 'w') as fileout:
-            fileout.write('{} {}\n'.format(sizein, sizeout))
-            for i in range(len(res)):
-                x = ' '.join([str(x) for x in test[0][i]])
-                r = [-1] * len(res[i])
-                r[res[i].index(max(res[i]))] = 1
-                y = ' '.join([str(y) for y in r])
-                fileout.write('{} {}\n'.format(x, y))
-        print('Test predictions were written to \'{}\'.'.format(f))
-
-    print('Confussion Matrix:')
-    prettymatrix(m)
+    if args['mode'] == 'mode3':
+        with open(args['output'], 'w') as file_out:
+            results = p.test(test[0])
+            for r in results:
+                for x in r:
+                    file_out.write(str(x) + '\n')
 
 
 if __name__ == "__main__":

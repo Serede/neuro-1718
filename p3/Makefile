@@ -10,10 +10,10 @@ autoencoder_help:
 	$(PYTHON) $(AUTOENCODER) -h
 
 autoencoder_exec:
-	$(PYTHON) $(AUTOENCODER) -s 10 -i 1 -l 0.25 -e 100 mode2 -d data/alfabeto_2e_7c.txt
+	$(PYTHON) $(AUTOENCODER) -s 10 -i 1 -l 0.25 -e 100 mode2 -d data/alfabeto_0e_1c.txt
 
-series_help:
+serie_help:
 	$(PYTHON) $(SERIES) -h
 
-series_exec:
-	$(PYTHON) $(SERIES) -s 2 -i 1 -l 0.25 -e 100 mode1 -d data/serie1_3_1.txt -r 0.7
+serie_exec:
+	$(PYTHON) $(SERIES) -s 2 -i 0.5 -l 0.1 -e 2000 mode1 -d data/serie1_2_2.txt -r 0.5

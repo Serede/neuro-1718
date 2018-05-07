@@ -17,9 +17,10 @@ _AUTHORS_ = ['Sergio Fuentes', 'Adrián Muñoz']
 def main():
     """Main function.
     """
-    #./ Crear_alfabeto num_copias num_errores fich_entrada fich_salida
+    # ./ Crear_alfabeto num_copias num_errores fich_entrada fich_salida
     if len(sys.argv) != 5:
-        raise ValueError('Invalid arguments.\nUsage: Crear_alfabeto num_copias num_errores fich_entrada fich_salida')
+        raise ValueError(
+            'Invalid arguments.\nUsage: Crear_alfabeto num_copias num_errores fich_entrada fich_salida')
 
     n_copies = int(sys.argv[1])
     n_errors = int(sys.argv[2])
@@ -30,6 +31,7 @@ def main():
     a.export(n_copies, n_errors, filename=file_out)
 
     return
+
 
 if __name__ == "__main__":
     main()
