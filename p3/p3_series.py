@@ -6,7 +6,7 @@
 from time import time
 from pprint import pprint
 
-from neuro.parser import Parser, mode1, mode2, mode3
+from neuro.parser import Parser, mode1, mode2, mode3, modeR
 from neuro.series import Series
 
 _COURSE_ = 'NEUROCOMPUTACIÓN'
@@ -36,9 +36,6 @@ def main():
 
     parser = Parser(_COURSE_, _YEAR_, _TITLE_, _PAIR_, _AUTHORS_)
 
-    parser._parser.add_argument(
-        '-r', '--recursive', help='train recursively', action='store_true')
-
     args = vars(parser.parse_args())
 
     sizes = [int(s) for s in args['sizes']]
@@ -53,21 +50,42 @@ def main():
         sizein, sizeout, train, test = mode2(args['data'])
     elif args['mode'] == 'mode3':
         sizein, sizeout, train, test = mode3(args['train'], args['test'])
+    elif args['mode'] == 'modeR':
+        sizein, sizeout, train, test = modeR(args['train'], args['proportion'])
+
+        p = Series('Series', sizein, sizeout, sizes)
+        p.randomize_synapses(-init, init)
+
+        n_recursive = int(args['n_epochs'])
+        p.train(train[0], train[1], learn, epochs, normalize=False)
+        prediction_r, prediction = p.predict_recursive(test[0], n_recursive)
+
+        # Write the results to a file
+        # in the second line the respective prediction
+        # in the third line the complete prediction
+        with open(args['output'], 'w') as file_out:
+            # in the first line. the test output
+            file_out.writelines(' '.join([str(e[0]) for e in test[1]]))
+            file_out.writelines('\n')
+            # in the second line the recursive prediction
+            file_out.writelines(' '.join([str(p) for p in prediction_r]))
+            file_out.writelines('\n')
+            # in the third line the std prediction
+            file_out.writelines(' '.join([str(p[0]) for p in prediction]))
+            file_out.writelines('\n')
+        return
 
     p = Series('Series', sizein, sizeout, sizes)
     p.randomize_synapses(-init, init)
 
     print()
     t0 = time()
-    if args['recursive']:
-        p.train_recursive(train[0], train[1], learn,
-                          epochs, normalize=normalize)
-    else:
-        p.train(train[0], train[1], learn, epochs, normalize=normalize)
+    p.train(train[0], train[1], learn, epochs, normalize=normalize)
     t = time()
     print()
     print('Elapsed time: {0:.3f} seconds'.format(t - t0))
     print()
+
 
     ecm, basic = p.stats(test[0], test[1])
 

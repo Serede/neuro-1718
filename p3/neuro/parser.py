@@ -79,6 +79,18 @@ class Parser():
         parser.add_argument(
             '-o', '--output', help='Output file for predictions', required=True)
 
+        # Recursive subparser
+        parser = sp.add_parser(
+            'modeR', help='1 file devoted to train')
+        parser.add_argument(
+            '-d', '--train', help='Train dataset file', required=True)
+        parser.add_argument(
+            '-n', '--n_epochs', help='Number of epochs to predict recursively', required=True)
+        parser.add_argument(
+            '-p', '--proportion', help='Proportion of the train dataset devoted to train', required=True)
+        parser.add_argument(
+            '-o', '--output', help='Output file for predictions', required=True)
+
         self.parse_args = self._parser.parse_args
 
     parse_args = None
@@ -149,3 +161,21 @@ def mode3(train_file, test_file):
     print('- Test instances: {}'.format(len(test[0])))
 
     return ds1.sizein, ds1.sizeout, train, test
+
+def modeR(train_file, proportion):
+    """Prepares data for recursive mode.
+
+    Args:
+        train_file (str): Train dataset file.
+    Returns:
+        tuple: (sizein, sizeout, train)
+    """
+    print('Running in Recursive Mode')
+    # Load train dataset
+    ds = Dataset(train_file)
+    train, test = ds.partition(float(proportion), shuff=False)
+
+    print('- Train instances: {}'.format(len(train[0])))
+    print('- Train instances: {}'.format(len(test[0])))
+
+    return ds.sizein, ds.sizeout, train, test

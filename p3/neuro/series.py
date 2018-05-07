@@ -6,7 +6,8 @@
 from copy import deepcopy
 
 from neuro.ml_perceptron import MLPerceptron, BIAS_KEY, NAME_I, NAME_O, NAME_H
-
+import queue
+from collections import deque
 
 class Series(MLPerceptron):
     """Series class.
@@ -212,3 +213,29 @@ class Series(MLPerceptron):
             basic += sum([(t - X[-1]) ** 2 for t in T])
         # Return both stats
         return ecm/n, basic/n
+
+    def predict_recursive(self, datain, n_epochs):
+
+        predictions = []
+        q = queue.Queue()
+
+        # Take the first row and start to build your own datain
+        buff = deque(datain[0])
+
+        for i in  range(n_epochs):
+            # make a prediction
+            attr = [list(buff)]
+
+            # Single instance to predict, thus the [0]
+            prediction = self.test(attr)[0]
+
+            # add to the queue
+            for p in prediction:
+                predictions.append(p)
+                q.put(p)
+
+            # insert new instance in datain
+            buff.rotate(-1)
+            buff[-1] = q.get()
+
+        return predictions, self.test(datain)
