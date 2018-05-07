@@ -36,6 +36,9 @@ def main():
 
     parser = Parser(_COURSE_, _YEAR_, _TITLE_, _PAIR_, _AUTHORS_)
 
+    parser._parser.add_argument(
+        '-r', '--recursive', help='train recursively', action='store_true')
+
     args = vars(parser.parse_args())
 
     sizes = [int(s) for s in args['sizes']]
@@ -56,7 +59,11 @@ def main():
 
     print()
     t0 = time()
-    p.train(train[0], train[1], learn, epochs, normalize=normalize)
+    if args['recursive']:
+        p.train_recursive(train[0], train[1], learn,
+                          epochs, normalize=normalize)
+    else:
+        p.train(train[0], train[1], learn, epochs, normalize=normalize)
     t = time()
     print()
     print('Elapsed time: {0:.3f} seconds'.format(t - t0))
